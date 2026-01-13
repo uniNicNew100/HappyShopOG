@@ -35,7 +35,7 @@ public class SetDatabase {
     private static Path imageWorkingFolderPath = StorageLocation.imageFolderPath;
     private static Path imageBackupFolderPath = StorageLocation.imageResetFolderPath;
 
-    private String[] tables = {"ProductTable"};
+    private String[] tables = {"ProductTable","LoginTable"};
     // Currently only "ProductTable" exists, but using an array allows easy expansion
     // if more tables need to be processed in the future without changing the logic structure.
 
@@ -102,6 +102,16 @@ public class SetDatabase {
                 "INSERT INTO ProductTable VALUES('0010', 'USB4 drive', 9.99, '0010.jpg',100)",
                 "INSERT INTO ProductTable VALUES('0011', 'USB5 drive', 10.99, '0011.jpg',100)",
                 "INSERT INTO ProductTable VALUES('0012', 'USB6 drive', 10.99, '0011.jpg',100)",
+
+
+                "CREATE TABLE LoginTable(" +
+                        "username VARCHAR(50) PRIMARY KEY," +
+                        "password VARCHAR(64) NOT NULL," +
+                        "role VARCHAR(20) NOT NULL" + ")",
+
+                "INSERT INTO LoginTable VALUES('admin','admin123','employee')",
+                "INSERT INTO LoginTable VALUES('cust','cust123','customer')"
+
         };
 
         try (Connection connection = DriverManager.getConnection(dbURL)) {
