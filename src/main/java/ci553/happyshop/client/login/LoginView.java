@@ -35,8 +35,8 @@ public class LoginView {
         );
 
         Button btnCreateAccount = new Button("Create Account");
-//        btnCreateAccount.setOnAction(e ->
-//                main.startCustomerCreate());
+      btnCreateAccount.setOnAction(e ->
+                main.startCustomerCreate());
 
         root.getChildren().addAll(username, password, btnLogin,btnCreateAccount);
 

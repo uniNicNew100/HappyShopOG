@@ -11,6 +11,7 @@ import ci553.happyshop.client.picker.PickerController;
 import ci553.happyshop.client.picker.PickerModel;
 import ci553.happyshop.client.picker.PickerView;
 import ci553.happyshop.client.employeeMenu.*;
+import ci553.happyshop.client.customerCreateAcc.*;
 
 import ci553.happyshop.client.warehouse.*;
 import ci553.happyshop.orderManagement.OrderHub;
@@ -197,6 +198,25 @@ public class Main extends Application {
         Scene scene = new Scene(menView.getRoot(), 400, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public void startCustomerCreate(){
+
+        CreateAccView createAccView = new CreateAccView();
+        CreateAccController createAccController = new CreateAccController(this);
+        CreateAccModel createAccModel = new CreateAccModel();
+        DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
+
+        createAccView.createAccController = createAccController;
+        createAccView.main = this;
+        createAccController.createAccModel= createAccModel;
+        createAccModel.createAccView = createAccView;
+
+
+        Scene scene = new Scene(createAccView.getRoot(), 400, 400);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
     }
 }
 
