@@ -35,7 +35,7 @@ public class SetDatabase {
     private static Path imageWorkingFolderPath = StorageLocation.imageFolderPath;
     private static Path imageBackupFolderPath = StorageLocation.imageResetFolderPath;
 
-    private String[] tables = {"ProductTable","LoginTable"};
+    private String[] tables = {"ProductTable","LoginTable","CategoryTable","ProductCategoryTable"};
     // Currently only "ProductTable" exists, but using an array allows easy expansion
     // if more tables need to be processed in the future without changing the logic structure.
 
@@ -110,7 +110,35 @@ public class SetDatabase {
                         "role VARCHAR(20) NOT NULL" + ")",
 
                 "INSERT INTO LoginTable VALUES('admin','admin123','employee')",
-                "INSERT INTO LoginTable VALUES('cust','cust123','customer')"
+                "INSERT INTO LoginTable VALUES('cust','cust123','customer')",
+
+                "CREATE TABLE CategoryTable(" +
+                        "categoryID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY," +
+                        "categoryName VARCHAR(100)" +
+                        ")",
+
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Home')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('TVs')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Lights')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Kitchen')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Office')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Peripherals')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Laptops')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Smartphones')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Network')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('PC')",
+
+                "CREATE TABLE ProductCategoryTable("+
+                        "productID CHAR(4)," +
+                        "categoryID INT,"+
+                        "PRIMARY KEY (productID, categoryID),"+
+                        "FOREIGN KEY (productID) REFERENCES ProductTable(productID)," +
+                        "FOREIGN KEY (categoryID) REFERENCES CategoryTable(categoryID))",
+
+                "INSERT INTO ProductCategoryTable VALUES ('0001',(SELECT categoryID FROM CategoryTable WHERE categoryName = 'Home'))",
+                "INSERT INTO ProductCategoryTable VALUES ('0001',(SELECT categoryID FROM CategoryTable WHERE categoryName = 'TVs'))"
+
+
 
         };
 
