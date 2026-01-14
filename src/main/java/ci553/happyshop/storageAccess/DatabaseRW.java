@@ -4,6 +4,7 @@ import ci553.happyshop.catalogue.Product;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The DatabaseRW interface defines the contract for interacting with the product database.
@@ -86,6 +87,8 @@ public interface DatabaseRW {
      * @return true if the ID is available, false if it already exists in the database
      */
     boolean isProIdAvailable(String productId) throws SQLException;
+    List<Product> getAllProducts();
+    List<Product> getProductsByCategory(String category);
 }
 
 
