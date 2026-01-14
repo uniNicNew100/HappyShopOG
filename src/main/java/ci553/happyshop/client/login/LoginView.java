@@ -35,12 +35,10 @@ public class LoginView {
         );
 
         Button btnCreateAccount = new Button("Create Account");
-        btnCreateAccount.setOnAction(e ->
-                //main.showCustomerCreate());
+//        btnCreateAccount.setOnAction(e ->
+//                main.startCustomerCreate());
 
         root.getChildren().addAll(username, password, btnLogin,btnCreateAccount);
-
-
 
         root.setStyle("-fx-padding: 20px; -fx-alignment: center; -fx-spacing: 10px;");
         return root;

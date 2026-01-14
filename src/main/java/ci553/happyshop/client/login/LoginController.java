@@ -20,10 +20,10 @@ public class LoginController {
 
             if (role.equalsIgnoreCase("customer")) {
                 setCurrentUser();
-                //main.showCustomerClient();
+                main.startCustomerClient();
             } else if (role.equalsIgnoreCase("employee")) {
                 setCurrentUser();
-                //main.showEmployeeMenu();
+                main.startEmployeeMenu();
             }
         } else {
             System.out.println("Login failed: invalid credentials.");

@@ -3,16 +3,22 @@ package ci553.happyshop.client;
 import ci553.happyshop.client.customer.*;
 
 import ci553.happyshop.client.emergency.EmergencyExit;
+import ci553.happyshop.client.login.LoginController;
+import ci553.happyshop.client.login.LoginModel;
+import ci553.happyshop.client.login.LoginView;
 import ci553.happyshop.client.orderTracker.OrderTracker;
 import ci553.happyshop.client.picker.PickerController;
 import ci553.happyshop.client.picker.PickerModel;
 import ci553.happyshop.client.picker.PickerView;
+import ci553.happyshop.client.employeeMenu.*;
 
 import ci553.happyshop.client.warehouse.*;
 import ci553.happyshop.orderManagement.OrderHub;
 import ci553.happyshop.storageAccess.DatabaseRW;
 import ci553.happyshop.storageAccess.DatabaseRWFactory;
+import ci553.happyshop.utility.UIStyle;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
@@ -35,13 +41,16 @@ import java.io.IOException;
 
 public class Main extends Application {
 
+    private Stage primaryStage;
     public static void main(String[] args) {
         launch(args); // Launches the JavaFX application and calls the @Override start()
     }
 
     //starts the system
     @Override
-    public void start(Stage window) throws IOException {
+    public void start(Stage stage) throws IOException {
+        this.primaryStage = stage;
+        startLoginScene();
         //startCustomerClient();
        // startPickerClient();
        // startOrderTracker();
@@ -69,17 +78,21 @@ public class Main extends Application {
      * Also creates the RemoveProductNotifier, which tracks the position of the Customer View
      * and is triggered by the Customer Model when needed.
      */
-    private void startCustomerClient(){
+    public void startCustomerClient(){
         CustomerView cusView = new CustomerView();
-        CustomerController cusController = new CustomerController();
+        CustomerController cusController = new CustomerController(this);
         CustomerModel cusModel = new CustomerModel();
         DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
 
         cusView.cusController = cusController;
+        cusView.main = this;
         cusController.cusModel = cusModel;
+        cusController.main = this;
         cusModel.cusView = cusView;
         cusModel.databaseRW = databaseRW;
-        cusView.start(new Stage());
+
+        Scene scene = new Scene(cusView.getRoot(), UIStyle.customerWinWidth, UIStyle.customerWinHeight);
+        primaryStage.setScene(scene);
 
         //RemoveProductNotifier removeProductNotifier = new RemoveProductNotifier();
         //removeProductNotifier.cusView = cusView;
@@ -155,6 +168,35 @@ public class Main extends Application {
     //starts the EmergencyExit GUI, - used to close the entire application immediatelly
     private void startEmergencyExit(){
         EmergencyExit.getEmergencyExit();
+    }
+
+    public void startLoginScene(){
+
+        LoginModel loginModel = new LoginModel();
+        LoginView loginView = new LoginView();
+        LoginController loginController = new LoginController(this);
+
+        loginView.loginController = loginController;
+        loginView.main = this;
+        loginController.loginModel = loginModel;
+        loginController.main = this;
+        loginModel.loginView = loginView;
+        Scene scene = new Scene(loginView.getRoot(), UIStyle.customerWinWidth, UIStyle.customerWinHeight);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public void startEmployeeMenu() {
+        MenuView menView = new MenuView();
+        MenuController controller = new MenuController(this);
+
+        menView.menController = controller;
+        menView.main = this;
+
+
+        Scene scene = new Scene(menView.getRoot(), 400, 400);
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 }
 

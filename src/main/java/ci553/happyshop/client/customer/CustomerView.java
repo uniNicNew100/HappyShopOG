@@ -1,11 +1,13 @@
 package ci553.happyshop.client.customer;
-
+import ci553.happyshop.client.Main;
+import ci553.happyshop.client.login.LoginView;
 import ci553.happyshop.utility.UIStyle;
 import ci553.happyshop.utility.WinPosManager;
 import ci553.happyshop.utility.WindowBounds;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -28,6 +30,7 @@ import java.sql.SQLException;
 
 public class CustomerView  {
     public CustomerController cusController;
+    public Main main;
 
     private final int WIDTH = UIStyle.customerWinWidth;
     private final int HEIGHT = UIStyle.customerWinHeight;
@@ -46,11 +49,11 @@ public class CustomerView  {
     private TextArea taTrolley; //in trolley Page
     private TextArea taReceipt;//in receipt page
 
-    // Holds a reference to this CustomerView window for future access and management
-    // (e.g., positioning the removeProductNotifier when needed).
-    private Stage viewWindow;
 
-    public void start(Stage window) {
+
+
+    public Parent getRoot() {
+
         VBox vbSearchPage = createSearchPage();
         vbTrolleyPage = CreateTrolleyPage();
         vbReceiptPage = createReceiptPage();
@@ -66,13 +69,7 @@ public class CustomerView  {
         hbRoot = new HBox(10, vbSearchPage, lineContainer, vbTrolleyPage); //initialize to show trolleyPage
         hbRoot.setAlignment(Pos.CENTER);
         hbRoot.setStyle(UIStyle.rootStyle);
-
-        Scene scene = new Scene(hbRoot, WIDTH, HEIGHT);
-        window.setScene(scene);
-        window.setTitle("🛒 HappyShop Customer Client");
-        WinPosManager.registerWindow(window,WIDTH,HEIGHT); //calculate position x and y for this window
-        window.show();
-        viewWindow=window;// Sets viewWindow to this window for future reference and management.
+        return hbRoot;
     }
 
     private VBox createSearchPage() {
@@ -89,7 +86,7 @@ public class CustomerView  {
         Label laName = new Label("Name:");
         laName.setStyle(UIStyle.labelStyle);
         tfName = new TextField();
-        tfName.setPromptText("implement it if you want");
+        tfName.setPromptText("");
         tfName.setStyle(UIStyle.textFiledStyle);
         HBox hbName = new HBox(10, laName, tfName);
 
@@ -139,7 +136,11 @@ public class CustomerView  {
         btnCheckout.setOnAction(this::buttonClicked);
         btnCheckout.setStyle(UIStyle.buttonStyle);
 
-        HBox hbBtns = new HBox(10, btnCancel,btnCheckout);
+        Button btnLogout = new Button("LogOut");
+        btnLogout.setOnAction(this::buttonClicked);
+        btnLogout.setStyle(UIStyle.buttonStyle);
+
+        HBox hbBtns = new HBox(10, btnCancel,btnCheckout,btnLogout);
         hbBtns.setStyle("-fx-padding: 15px;");
         hbBtns.setAlignment(Pos.CENTER);
 
@@ -181,6 +182,9 @@ public class CustomerView  {
             if(action.equals("OK & Close")){
                 showTrolleyOrReceiptPage(vbTrolleyPage);
             }
+            if(action.equals("LogOut")) {
+                main.startLoginScene();
+            }
             cusController.doAction(action);
         }
         catch(SQLException e){
@@ -211,8 +215,4 @@ public class CustomerView  {
         }
     }
 
-    WindowBounds getWindowBounds() {
-        return new WindowBounds(viewWindow.getX(), viewWindow.getY(),
-                  viewWindow.getWidth(), viewWindow.getHeight());
-    }
 }
