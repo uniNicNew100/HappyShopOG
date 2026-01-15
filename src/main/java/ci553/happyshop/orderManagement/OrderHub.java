@@ -65,10 +65,19 @@ public class OrderHub  {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     //Singleton pattern
-    private OrderHub() {}
+    private OrderHub() {
+        try {
+            Files.createDirectories(orderedPath);
+            Files.createDirectories(progressingPath);
+            Files.createDirectories(collectedPath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize order directories", e);
+        }
+    }
     public static OrderHub getOrderHub() {
-        if (orderHub == null)
+        if (orderHub == null) {
             orderHub = new OrderHub();
+        }
             return orderHub;
     }
 
@@ -145,6 +154,7 @@ public class OrderHub  {
             //change orderState in order file and move the file to new state folder
             switch(newState){
                 case OrderState.Progressing:
+                    Files.createDirectories(progressingPath);
                     OrderFileManager.updateAndMoveOrderFile(orderId, newState,orderedPath,progressingPath);
                     break;
                 case OrderState.Collected:

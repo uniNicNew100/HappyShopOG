@@ -46,6 +46,7 @@ public class OrderFileManager {
 
     //Creates a new order file in the specified directory with the given content.
     public static void createOrderFile(Path dir, int orderId, String orderDetail) throws IOException {
+        Files.createDirectories(dir);
         String orderFileName = String.valueOf(orderId)+".txt";
         Path path = dir.resolve(orderFileName); // eg. orders/ordered/12.txt
         if(Files.notExists(path)) {
@@ -72,6 +73,7 @@ public class OrderFileManager {
         if (Files.exists(sourcePath)) {
             updateOrderStateAndTime(sourceDir,orderId,newState); //Edit the file to update order state and add time
             if(!sourceDir.equals(targetDir)) //Move the file only if the source and destination are different
+                Files.createDirectories(targetDir);
                 Files.move(sourcePath,targetPath);
             return true;
         }

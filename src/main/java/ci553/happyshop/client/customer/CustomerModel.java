@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,50 +37,64 @@ public class CustomerModel {
     private String displayTaReceipt = "";                                // Text area content showing receipt after checkout (Receipt Page)
 
     //SELECT productID, description, image, unitPrice,inStock quantity
-    void search() throws SQLException {
-        String productId = cusView.tfId.getText().trim();
-        if(!productId.isEmpty()){
-            theProduct = databaseRW.searchByProductId(productId); //search database
-            if(theProduct != null && theProduct.getStockQuantity()>0){
-                double unitPrice = theProduct.getUnitPrice();
-                String description = theProduct.getProductDescription();
-                int stock = theProduct.getStockQuantity();
-                productName = theProduct.getProductDescription();
-
-                String baseInfo = String.format("Product_Id: %s\n%s,\nPrice: £%.2f", productId, description, unitPrice);
-                String quantityInfo = stock < 100 ? String.format("\n%d units left.", stock) : "";
-                displayLaSearchResult = baseInfo + quantityInfo;
-                System.out.println(displayLaSearchResult);
-            }
+    public List<Product> searchProducts(String keyword) {
+        List<Product> results = new ArrayList<>();
+        try {
+            Product product= databaseRW.searchByProductId(keyword);
+            if (product != null && theProduct.getStockQuantity()>0) results.add(product);
             else{
                 theProduct=null;
-                displayLaSearchResult = "No Product was found with ID " + productId;
-                System.out.println("No Product was found with ID " + productId);
+                displayLaSearchResult = "No Product was found with term " + keyword;
+                System.out.println("No Product was found with term " + keyword);
             }
-        }else{
-            theProduct=null;
-            displayLaSearchResult = "Please type ProductID";
-            System.out.println("Please type ProductID.");
+            results.addAll(databaseRW.searchProduct(keyword));
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        updateView();
+        return results;
     }
 
-    void addToTrolley(){
-        if(theProduct!= null){
 
-            // trolley.add(theProduct) — Product is appended to the end of the trolley.
-            // To keep the trolley organized, add code here or call a method that:
-            //TODO
-            // 1. Merges items with the same product ID (combining their quantities).
-            // 2. Sorts the products in the trolley by product ID.
-            trolley.add(theProduct);
-            displayTaTrolley = ProductListFormatter.buildString(trolley); //build a String for trolley so that we can show it
+    public void addToTrolley(Product selected) {
+        if (selected == null) {
+            displayLaSearchResult = "Please select a product first";
+            updateView();
+            return;
         }
-        else{
-            displayLaSearchResult = "Please search for an available product before adding it to the trolley";
-            System.out.println("must search and get an available product before add to trolley");
+
+        if (selected.getStockQuantity() <= 0) {
+            displayLaSearchResult = "Product is out of stock!";
+            updateView();
+            return;
         }
-        displayTaReceipt=""; // Clear receipt to switch back to trolleyPage (receipt shows only when not empty)
+
+        // Merge quantities if the product already exists in trolley
+        boolean exists = false;
+        for (Product p : trolley) {
+            if (p.getProductId().equals(selected.getProductId())) {
+                p.setOrderedQuantity(p.getOrderedQuantity() + 1);
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists) {
+            // Add a copy to the trolley
+            Product copy = new Product(
+                    selected.getProductId(),
+                    selected.getProductDescription(),
+                    selected.getProductImageName(),
+                    selected.getUnitPrice(),
+                    selected.getStockQuantity()
+            );
+            copy.setOrderedQuantity(1);
+            trolley.add(copy);
+        }
+
+        displayTaTrolley = ProductListFormatter.buildString(trolley);
+        displayTaReceipt = ""; // clear receipt view
         updateView();
     }
 
@@ -163,7 +178,7 @@ public class CustomerModel {
         displayTaReceipt="";
     }
 
-    void updateView() {
+    public void updateView() {
         if(theProduct != null){
             imageName = theProduct.getProductImageName();
             cusView.tfName.setText(productName);
@@ -176,7 +191,14 @@ public class CustomerModel {
         else{
             imageName = "imageHolder.jpg";
         }
-        cusView.update(imageName, displayLaSearchResult, displayTaTrolley,displayTaReceipt);
+        cusView.update(imageName, displayTaTrolley,displayTaReceipt);
+    }
+    public List<Product> filterByCategory(String category) {
+        return databaseRW.getProductsByCategory(category);
+    }
+
+    public List<Product> getAllProducts() {
+        return databaseRW.getAllProducts();
     }
      // extra notes:
      //Path.toUri(): Converts a Path object (a file or a directory path) to a URI object.

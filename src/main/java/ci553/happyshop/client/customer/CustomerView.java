@@ -1,10 +1,12 @@
 package ci553.happyshop.client.customer;
+import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.client.Main;
 import ci553.happyshop.client.login.LoginView;
 import ci553.happyshop.utility.UIStyle;
 import ci553.happyshop.utility.WinPosManager;
 import ci553.happyshop.utility.WindowBounds;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -19,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * The CustomerView is separated into two sections by a line :
@@ -39,83 +42,88 @@ public class CustomerView  {
     private HBox hbRoot; // Top-level layout manager
     private VBox vbTrolleyPage;  //vbTrolleyPage and vbReceiptPage will swap with each other when need
     private VBox vbReceiptPage;
+    private VBox vbSearchPage;
+    private VBox vbProducts;
 
     TextField tfId; //for user input on the search page. Made accessible so it can be accessed or modified by CustomerModel
     TextField tfName; //for user input on the search page. Made accessible so it can be accessed by CustomerModel
-
+    TextField searchField;
+    ComboBox<String> filterComboBox;
     //four controllers needs updating when program going on
     private ImageView ivProduct; //image area in searchPage
     private Label lbProductInfo;//product text info in searchPage
     private TextArea taTrolley; //in trolley Page
     private TextArea taReceipt;//in receipt page
+    private Product selectedProduct;
+
+    public Product getSelectedProduct() {
+        return selectedProduct;
+    }
 
 
 
 
     public Parent getRoot() {
 
-        VBox vbSearchPage = createSearchPage();
+        vbSearchPage = createSearchPage();
+        vbProducts = new VBox(10);          // ✅ product list container
+        vbProducts.setPadding(new Insets(10));
+
+        ScrollPane productScroll = new ScrollPane(vbProducts);
+        productScroll.setFitToWidth(true);
+
         vbTrolleyPage = CreateTrolleyPage();
         vbReceiptPage = createReceiptPage();
 
-        // Create a divider line
         Line line = new Line(0, 0, 0, HEIGHT);
         line.setStrokeWidth(4);
         line.setStroke(Color.PINK);
+
         VBox lineContainer = new VBox(line);
-        lineContainer.setPrefWidth(4); // Give it some space
         lineContainer.setAlignment(Pos.CENTER);
 
-        hbRoot = new HBox(10, vbSearchPage, lineContainer, vbTrolleyPage); //initialize to show trolleyPage
+        VBox leftSide = new VBox(10, vbSearchPage, productScroll);
+
+        hbRoot = new HBox(10, leftSide, lineContainer, vbTrolleyPage);
         hbRoot.setAlignment(Pos.CENTER);
         hbRoot.setStyle(UIStyle.rootStyle);
+
         return hbRoot;
+
     }
 
     private VBox createSearchPage() {
-        Label laPageTitle = new Label("Search by Product ID/Name");
-        laPageTitle.setStyle(UIStyle.labelTitleStyle);
 
-        Label laId = new Label("ID:      ");
-        laId.setStyle(UIStyle.labelStyle);
-        tfId = new TextField();
-        tfId.setPromptText("eg. 0001");
-        tfId.setStyle(UIStyle.textFiledStyle);
-        HBox hbId = new HBox(10, laId, tfId);
+        Label title = new Label("Product Catalogue");
 
-        Label laName = new Label("Name:");
-        laName.setStyle(UIStyle.labelStyle);
-        tfName = new TextField();
-        tfName.setPromptText("");
-        tfName.setStyle(UIStyle.textFiledStyle);
-        HBox hbName = new HBox(10, laName, tfName);
+        searchField = new TextField();
+        searchField.setPromptText("Search products...");
 
-        Label laPlaceHolder = new Label(  " ".repeat(15)); //create left-side spacing so that this HBox aligns with others in the layout.
         Button btnSearch = new Button("Search");
-        btnSearch.setStyle(UIStyle.buttonStyle);
-        btnSearch.setOnAction(this::buttonClicked);
-        Button btnAddToTrolley = new Button("Add to Trolley");
-        btnAddToTrolley.setStyle(UIStyle.buttonStyle);
-        btnAddToTrolley.setOnAction(this::buttonClicked);
-        HBox hbBtns = new HBox(10, laPlaceHolder,btnSearch, btnAddToTrolley);
 
-        ivProduct = new ImageView("imageHolder.jpg");
-        ivProduct.setFitHeight(60);
-        ivProduct.setFitWidth(60);
-        ivProduct.setPreserveRatio(true); // Image keeps its original shape and fits inside 60×60
-        ivProduct.setSmooth(true); //make it smooth and nice-looking
 
-        lbProductInfo = new Label("Thank you for shopping with us.");
-        lbProductInfo.setWrapText(true);
-        lbProductInfo.setMinHeight(Label.USE_PREF_SIZE);  // Allow auto-resize
-        lbProductInfo.setStyle(UIStyle.labelMulLineStyle);
-        HBox hbSearchResult = new HBox(5, ivProduct, lbProductInfo);
-        hbSearchResult.setAlignment(Pos.CENTER_LEFT);
+        filterComboBox = new ComboBox<>();
+        filterComboBox.getItems().addAll(
+                "All", "Home", "TVs", "Kitchen", "Office",
+                "Peripherals", "PC", "Laptops", "Smartphones"
+        );
+        filterComboBox.setValue("All");
 
-        VBox vbSearchPage = new VBox(15, laPageTitle, hbId, hbName, hbBtns, hbSearchResult);
-        vbSearchPage.setPrefWidth(COLUMN_WIDTH);
-        vbSearchPage.setAlignment(Pos.TOP_CENTER);
-        vbSearchPage.setStyle("-fx-padding: 15px;");
+        Button btnFilter = new Button("Filter");
+
+
+        Button btnViewTrolley = new Button("View Trolley");
+
+        HBox hbControls = new HBox(10,
+                searchField, btnSearch, filterComboBox, btnFilter, btnViewTrolley
+        );
+        hbControls.setAlignment(Pos.CENTER);
+
+        vbSearchPage = new VBox(10,
+                title,
+                hbControls
+        );
+        vbSearchPage.setPadding(new Insets(10));
 
         return vbSearchPage;
     }
@@ -170,6 +178,42 @@ public class CustomerView  {
         vbReceiptPage.setStyle(UIStyle.rootStyleYellow);
         return vbReceiptPage;
     }
+    private HBox createProductBox(Product product) {
+
+        ivProduct = new ImageView();
+        try {
+            ivProduct.setImage(new Image(product.getProductImageName(), 60, 60, true, true));
+        } catch (Exception e) {
+            ivProduct.setImage(new Image("imageHolder.jpg", 60, 60, true, true));
+        }
+
+        Label lbInfo = new Label(
+                product.getProductDescription() + "\n" +
+                        "£" + product.getUnitPrice() + "\n" +
+                        "Stock: " + product.getStockQuantity()
+        );
+        lbInfo.setMinWidth(200);
+        lbInfo.setWrapText(true);
+
+        Button btnAdd = new Button("Add to Trolley");
+        btnAdd.setOnAction(e -> {
+            selectedProduct = product;
+            try {
+                cusController.doAction("Add to Trolley");
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        HBox productBox = new HBox(15,ivProduct, lbInfo, btnAdd);
+        productBox.setPadding(new Insets(10));
+        productBox.setAlignment(Pos.CENTER_LEFT);
+        productBox.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5;");
+
+        return productBox;
+    }
 
 
     private void buttonClicked(ActionEvent event) {
@@ -182,9 +226,8 @@ public class CustomerView  {
             if(action.equals("OK & Close")){
                 showTrolleyOrReceiptPage(vbTrolleyPage);
             }
-            if(action.equals("LogOut")) {
-                main.startLoginScene();
-            }
+
+
             cusController.doAction(action);
         }
         catch(SQLException e){
@@ -195,10 +238,10 @@ public class CustomerView  {
     }
 
 
-    public void update(String imageName, String searchResult, String trolley, String receipt) {
+    public void update(String imageName, String trolley, String receipt) {
 
         ivProduct.setImage(new Image(imageName));
-        lbProductInfo.setText(searchResult);
+        //lbProductInfo.setText(searchResult);
         taTrolley.setText(trolley);
         if (!receipt.equals("")) {
             showTrolleyOrReceiptPage(vbReceiptPage);
@@ -212,6 +255,14 @@ public class CustomerView  {
         int lastIndex = hbRoot.getChildren().size() - 1;
         if (lastIndex >= 0) {
             hbRoot.getChildren().set(lastIndex, pageToShow);
+        }
+    }
+
+    public void showProducts(List<Product> products) {
+        vbProducts.getChildren().clear();
+
+        for (Product product : products) {
+            vbProducts.getChildren().add(createProductBox(product));
         }
     }
 

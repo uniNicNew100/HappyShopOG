@@ -138,8 +138,6 @@ public class SetDatabase {
                 "INSERT INTO ProductCategoryTable VALUES ('0001',(SELECT categoryID FROM CategoryTable WHERE categoryName = 'Home'))",
                 "INSERT INTO ProductCategoryTable VALUES ('0001',(SELECT categoryID FROM CategoryTable WHERE categoryName = 'TVs'))"
 
-
-
         };
 
         try (Connection connection = DriverManager.getConnection(dbURL)) {

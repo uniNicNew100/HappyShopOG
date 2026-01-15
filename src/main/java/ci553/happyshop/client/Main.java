@@ -64,8 +64,8 @@ public class Main extends Application {
         // (such as OrderTracker and Picker clients) to ensure they are properly registered for receiving updates.
         initializeOrderMap();
 
-        startWarehouseClient();
-        startWarehouseClient();
+        //startWarehouseClient();
+
 
         //startEmergencyExit();
     }
@@ -80,25 +80,38 @@ public class Main extends Application {
      * and is triggered by the Customer Model when needed.
      */
     public void startCustomerClient(){
+
+        DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
+
         CustomerView cusView = new CustomerView();
         CustomerController cusController = new CustomerController(this);
         CustomerModel cusModel = new CustomerModel();
-        DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
 
         cusView.cusController = cusController;
         cusView.main = this;
+
         cusController.cusModel = cusModel;
+        cusController.cusView = cusView;
         cusController.main = this;
+
         cusModel.cusView = cusView;
         cusModel.databaseRW = databaseRW;
 
-        Scene scene = new Scene(cusView.getRoot(), UIStyle.customerWinWidth, UIStyle.customerWinHeight);
+        Scene scene = new Scene(cusView.getRoot(),
+                UIStyle.customerWinWidth,
+                UIStyle.customerWinHeight);
+
         primaryStage.setScene(scene);
+        primaryStage.show();
+
+        cusController.loadAllProducts();
 
         //RemoveProductNotifier removeProductNotifier = new RemoveProductNotifier();
         //removeProductNotifier.cusView = cusView;
         //cusModel.removeProductNotifier = removeProductNotifier;
     }
+
+
 
     /** The picker GUI, - for staff to pack customer's order,
      *
