@@ -2,6 +2,7 @@ package ci553.happyshop.client.customer;
 import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.client.Main;
 import ci553.happyshop.client.login.LoginView;
+import ci553.happyshop.utility.StorageLocation;
 import ci553.happyshop.utility.UIStyle;
 import ci553.happyshop.utility.WinPosManager;
 import ci553.happyshop.utility.WindowBounds;
@@ -20,6 +21,8 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -55,6 +58,10 @@ public class CustomerView  {
     private TextArea taTrolley; //in trolley Page
     private TextArea taReceipt;//in receipt page
     private Product selectedProduct;
+    String userSelectedImageUriEdit;
+    boolean isUserSelectedImageEdit = false;
+    private ImageView ivProNewPro;
+    String imageUriNewPro;
 
     public Product getSelectedProduct() {
         return selectedProduct;
@@ -100,6 +107,7 @@ public class CustomerView  {
         searchField.setPromptText("Search products...");
 
         Button btnSearch = new Button("Search");
+        btnSearch.setOnAction(this::buttonClicked);
 
 
         filterComboBox = new ComboBox<>();
@@ -110,12 +118,12 @@ public class CustomerView  {
         filterComboBox.setValue("All");
 
         Button btnFilter = new Button("Filter");
+        btnFilter.setOnAction(this::buttonClicked);
 
 
-        Button btnViewTrolley = new Button("View Trolley");
 
         HBox hbControls = new HBox(10,
-                searchField, btnSearch, filterComboBox, btnFilter, btnViewTrolley
+                searchField, btnSearch, filterComboBox, btnFilter
         );
         hbControls.setAlignment(Pos.CENTER);
 
@@ -179,10 +187,15 @@ public class CustomerView  {
         return vbReceiptPage;
     }
     private HBox createProductBox(Product product) {
+        String imageName = product.getProductImageName(); // Get image name (e.g. "0001.jpg")
+        String relativeImageUrl = StorageLocation.imageFolder + imageName;
+        // Get the full absolute path to the image
+        Path imageFullPath = Paths.get(relativeImageUrl).toAbsolutePath();
+        String imageFullUri = imageFullPath.toUri().toString();// Build the full image Uri
+        ImageView ivPro = new ImageView();
 
-        ivProduct = new ImageView();
         try {
-            ivProduct.setImage(new Image(product.getProductImageName(), 60, 60, true, true));
+            ivPro = ( new ImageView(new Image(imageFullUri, 50,45, true,true)));
         } catch (Exception e) {
             ivProduct.setImage(new Image("imageHolder.jpg", 60, 60, true, true));
         }
@@ -207,7 +220,7 @@ public class CustomerView  {
             }
         });
 
-        HBox productBox = new HBox(15,ivProduct, lbInfo, btnAdd);
+        HBox productBox = new HBox(15,ivPro, lbInfo, btnAdd);
         productBox.setPadding(new Insets(10));
         productBox.setAlignment(Pos.CENTER_LEFT);
         productBox.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5;");
@@ -264,6 +277,15 @@ public class CustomerView  {
         for (Product product : products) {
             vbProducts.getChildren().add(createProductBox(product));
         }
+    }
+    public WindowBounds getWindowBounds() {
+        Stage stage = (Stage) hbRoot.getScene().getWindow();
+        return new WindowBounds(
+                stage.getX(),
+                stage.getY(),
+                stage.getWidth(),
+                stage.getHeight()
+        );
     }
 
 }

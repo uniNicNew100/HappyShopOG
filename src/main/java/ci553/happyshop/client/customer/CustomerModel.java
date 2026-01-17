@@ -32,20 +32,21 @@ public class CustomerModel {
 
     // Four UI elements to be passed to CustomerView for display updates.
     private String imageName = "imageHolder.jpg";                // Image to show in product preview (Search Page)
-    private String displayLaSearchResult = "No Product was searched yet"; // Label showing search result message (Search Page)
+    public String displayLaSearchResult; // Label showing search result message (Search Page)
     private String displayTaTrolley = "";                                // Text area content showing current trolley items (Trolley Page)
     private String displayTaReceipt = "";                                // Text area content showing receipt after checkout (Receipt Page)
+    public RemoveProductNotifier removeProductNotifier;
 
-    //SELECT productID, description, image, unitPrice,inStock quantity
+
     public List<Product> searchProducts(String keyword) {
         List<Product> results = new ArrayList<>();
         try {
             Product product= databaseRW.searchByProductId(keyword);
-            if (product != null && theProduct.getStockQuantity()>0) results.add(product);
+            if (product != null && product.getStockQuantity()>0) results.add(product);
             else{
                 theProduct=null;
                 displayLaSearchResult = "No Product was found with term " + keyword;
-                System.out.println("No Product was found with term " + keyword);
+                System.out.println(displayLaSearchResult);
             }
             results.addAll(databaseRW.searchProduct(keyword));
 
@@ -57,6 +58,7 @@ public class CustomerModel {
     }
 
 
+
     public void addToTrolley(Product selected) {
         if (selected == null) {
             displayLaSearchResult = "Please select a product first";
@@ -65,23 +67,23 @@ public class CustomerModel {
         }
 
         if (selected.getStockQuantity() <= 0) {
-            displayLaSearchResult = "Product is out of stock!";
+            removeProductNotifier.showRemovalMsg("Not enough stock for this product: " + selected.getProductDescription());
             updateView();
             return;
         }
 
-        // Merge quantities if the product already exists in trolley
+
         boolean exists = false;
         for (Product p : trolley) {
             if (p.getProductId().equals(selected.getProductId())) {
                 p.setOrderedQuantity(p.getOrderedQuantity() + 1);
                 exists = true;
+                removeProductNotifier.closeNotifierWindow();
                 break;
             }
         }
 
         if (!exists) {
-            // Add a copy to the trolley
             Product copy = new Product(
                     selected.getProductId(),
                     selected.getProductDescription(),
@@ -92,10 +94,39 @@ public class CustomerModel {
             copy.setOrderedQuantity(1);
             trolley.add(copy);
         }
+        trolley.sort((p1, p2) -> p1.getProductId().compareTo(p2.getProductId()));
 
         displayTaTrolley = ProductListFormatter.buildString(trolley);
-        displayTaReceipt = ""; // clear receipt view
+        displayTaReceipt = ""; // Clear receipt
         updateView();
+    }
+
+    /**
+     * Groups products by their productId to optimize database queries and updates.
+     * By grouping products, we can check the stock for a given `productId` once, rather than repeatedly
+     */
+    private ArrayList<Product> groupProductsById(ArrayList<Product> proList) {
+        Map<String, Product> grouped = new HashMap<>();
+
+        for (Product p : proList) {
+            String id = p.getProductId();
+            if (grouped.containsKey(id)) {
+                Product existing = grouped.get(id);
+                existing.setOrderedQuantity(existing.getOrderedQuantity() + p.getOrderedQuantity());
+            } else {
+                Product copy = new Product(
+                        p.getProductId(),
+                        p.getProductDescription(),
+                        p.getProductImageName(),
+                        p.getUnitPrice(),
+                        p.getStockQuantity()
+                );
+                copy.setOrderedQuantity(p.getOrderedQuantity());
+                grouped.put(id, copy);
+            }
+        }
+
+        return new ArrayList<>(grouped.values());
     }
 
     void checkOut() throws IOException, SQLException {
@@ -120,7 +151,6 @@ public class CustomerModel {
                         theOrder.getOrderedDateTime(),
                         ProductListFormatter.buildString(theOrder.getProductList())
                 );
-                System.out.println(displayTaReceipt);
             }
             else{ // Some products have insufficient stock — build an error message to inform the customer
                 StringBuilder errorMsg = new StringBuilder();
@@ -130,74 +160,44 @@ public class CustomerModel {
                             .append(p.getStockQuantity()).append(" available, ")
                             .append(p.getOrderedQuantity()).append(" requested)\n");
                 }
-                theProduct=null;
 
-                //TODO
-                // Add the following logic here:
-                // 1. Remove products with insufficient stock from the trolley.
-                // 2. Trigger a message window to notify the customer about the insufficient stock, rather than directly changing displayLaSearchResult.
+                removeProductNotifier.showRemovalMsg(errorMsg.toString());
+
+
                 //You can use the provided RemoveProductNotifier class and its showRemovalMsg method for this purpose.
                 //remember close the message window where appropriate (using method closeNotifierWindow() of RemoveProductNotifier class)
                 displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg.toString();
-                System.out.println("stock is not enough");
             }
         }
-        else{
-            displayTaTrolley = "Your trolley is empty";
-            System.out.println("Your trolley is empty");
-        }
+            displayTaTrolley =  ProductListFormatter.buildString(trolley);
+
         updateView();
     }
 
-    /**
-     * Groups products by their productId to optimize database queries and updates.
-     * By grouping products, we can check the stock for a given `productId` once, rather than repeatedly
-     */
-    private ArrayList<Product> groupProductsById(ArrayList<Product> proList) {
-        Map<String, Product> grouped = new HashMap<>();
-        for (Product p : proList) {
-            String id = p.getProductId();
-            if (grouped.containsKey(id)) {
-                Product existing = grouped.get(id);
-                existing.setOrderedQuantity(existing.getOrderedQuantity() + p.getOrderedQuantity());
-            } else {
-                // Make a shallow copy to avoid modifying the original
-                grouped.put(id,new Product(p.getProductId(),p.getProductDescription(),
-                        p.getProductImageName(),p.getUnitPrice(),p.getStockQuantity()));
-            }
-        }
-        return new ArrayList<>(grouped.values());
-    }
+
 
     void cancel(){
         trolley.clear();
         displayTaTrolley="";
+        removeProductNotifier.closeNotifierWindow();
         updateView();
     }
     void closeReceipt(){
         displayTaReceipt="";
+        updateView();
     }
 
     public void updateView() {
-        if(theProduct != null){
-            imageName = theProduct.getProductImageName();
-            cusView.tfName.setText(productName);
-            String relativeImageUrl = StorageLocation.imageFolder +imageName; //relative file path, eg images/0001.jpg
-            // Get the full absolute path to the image
-            Path imageFullPath = Paths.get(relativeImageUrl).toAbsolutePath();
-            imageName = imageFullPath.toUri().toString(); //get the image full Uri then convert to String
-            System.out.println("Image absolute path: " + imageFullPath); // Debugging to ensure path is correct
-        }
-        else{
-            imageName = "imageHolder.jpg";
-        }
-        cusView.update(imageName, displayTaTrolley,displayTaReceipt);
+        String imageName = "imageHolder.jpg"; // default image
+        cusView.update(imageName, displayTaTrolley, displayTaReceipt);
     }
     public List<Product> filterByCategory(String category) {
+
         return databaseRW.getProductsByCategory(category);
     }
 
     public List<Product> getAllProducts() {
+
         return databaseRW.getAllProducts();
     }
      // extra notes:

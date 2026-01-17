@@ -1,11 +1,11 @@
 package ci553.happyshop.client.login;
 import ci553.happyshop.client.Main;
-import ci553.happyshop.client.catalogueBrowser.CatalogueController;
+
 
 public class LoginController {
     public LoginModel loginModel;
     public Main main;
-    public CatalogueController catalogueController;
+
 
     private static Boolean currentUser;
     public static void setCurrentUser() { currentUser = true; }

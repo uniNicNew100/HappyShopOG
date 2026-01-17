@@ -105,6 +105,8 @@ public class WarehouseView  {
     private ImageView ivProEdit;
     String userSelectedImageUriEdit;
     boolean isUserSelectedImageEdit = false;
+    ComboBox<String> addCategoryCB;
+    ComboBox<String> changeCategoryCB;
     /** userSelectedImageUriEdit: URI of the image selected by the user during editing.
      * This value is retrieved from the image chooser when the user selects or changes the image for an existing product.
      *
@@ -115,6 +117,7 @@ public class WarehouseView  {
     private Button btnSub;
     private Button btnCancelEdit;
     private Button btnSubmitEdit;
+    private Button btnMenu;
     /** Normally, buttons are not kept as instance variables. However, in this case,
      * btnAdd, btnSub, btnCancelEdit, and btnSubmitEdit:
      * They are kept as instance variables to manage their states (enabled/disabled) when necessary,
@@ -304,8 +307,14 @@ public class WarehouseView  {
         HBox hbPrice = new HBox(10, laPrice, tfPriceEdit);
         hbPrice.setAlignment(Pos.CENTER_LEFT);
 
+
+        Label laCat = new Label("Category");
+        laCat.setStyle(UIStyle.labelStyle);
+        changeCategoryCB = new ComboBox<>();
+        changeCategoryCB.getItems().addAll("Home","TVs","Lights","Kitchen","Office","Peripherals","PC","Laptops","Smartphones","Network","PC");
+        HBox hbCat = new HBox(10, laCat, changeCategoryCB);
         //VBox for id and price
-        VBox vbIdPrice = new VBox(10, hbId, hbPrice);
+        VBox vbIdPrice = new VBox(10, hbId, hbPrice, hbCat);
 
         // Product Image
         ivProEdit = new ImageView("WarehouseImageHolder.jpg");
@@ -324,6 +333,15 @@ public class WarehouseView  {
         // Editing stock
         Label laStock = new Label("Stock"+" ".repeat(3));
         laStock.setStyle(UIStyle.labelStyle);
+        
+        //button
+        addCategoryCB = new ComboBox<>();
+        addCategoryCB.getItems().addAll(
+                "Home", "TVs", "Kitchen", "Office",
+                "Peripherals", "PC", "Laptops", "Smartphones"
+        );
+        addCategoryCB.setPrefWidth(35);
+        addCategoryCB.setOnAction(this::buttonClick);
 
         // TextField current stock
         tfStockEdit = new TextField();
@@ -347,7 +365,7 @@ public class WarehouseView  {
         btnSub.setOnAction(this::buttonClick);
 
         //Hbox for all things related to edit stock
-        HBox hbStock = new HBox(10, laStock, tfStockEdit,tfChangeByEdit, btnAdd,btnSub);
+        HBox hbStock = new HBox(10, laStock, tfStockEdit,tfChangeByEdit,addCategoryCB, btnAdd,btnSub);
         hbStock.setAlignment(Pos.CENTER_LEFT);
 
         // VBox for Description label and TextArea
@@ -371,8 +389,13 @@ public class WarehouseView  {
         btnSubmitEdit.setPrefWidth(100);
         btnSubmitEdit.setOnAction(this::buttonClick);
 
+        //Menu Button
+        btnMenu = new Button("Menu");
+        btnMenu.setStyle(UIStyle.blueFillBtnStyle);
+        btnMenu.setOnAction(this::buttonClick);
+
         // HBox for OK & Cancel Buttons
-        HBox hbOkCancelBtns = new HBox(15, btnCancelEdit, btnSubmitEdit);
+        HBox hbOkCancelBtns = new HBox(15,btnMenu, btnCancelEdit, btnSubmitEdit);
         hbOkCancelBtns.setAlignment(Pos.CENTER);
         //hbOkCancelBtns.setPadding(new Insets(5));
 
@@ -407,6 +430,18 @@ public class WarehouseView  {
         tfStockNewPro.setStyle("-fx-font-size: 14px; -fx-pref-width: 100px;");
         HBox hbStock = new HBox(10, laStock, tfStockNewPro);
         hbStock.setAlignment(Pos.CENTER_LEFT);
+        
+        // Hbox for category combo box and label
+        Label laAddCat= new Label("Add New Category");
+        addCategoryCB = new ComboBox<>();
+        addCategoryCB.getItems().addAll(
+                "Home", "TVs", "Kitchen", "Office",
+                "Peripherals", "PC", "Laptops", "Smartphones"
+        );
+        addCategoryCB.setPrefWidth(35);
+        addCategoryCB.setOnAction(this::buttonClick);
+        HBox hbAddCat = new HBox(10, laAddCat, addCategoryCB);
+        hbAddCat.setAlignment(Pos.CENTER_LEFT);
 
         //VBox for id, price,stock
         VBox vbIdPriceStock = new VBox(10, hbId, hbPrice,hbStock);

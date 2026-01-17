@@ -167,6 +167,16 @@ public class WarehouseModel {
                 updateView(UpdateForAction.BtnSummitEdit);
                 theSelectedPro=null;
             }
+            String selectedCategory = view.changeCategoryCB.getValue();
+
+            if (selectedCategory == null) {
+                displayInputErrorMsg = "Please select a category.";
+                updateView(UpdateForAction.ShowInputErrorMsg);
+                return;
+            }
+
+
+            databaseRW.updateProductCategory(id, selectedCategory);
         }
         else{
             System.out.println("No Product Selected");
@@ -344,7 +354,19 @@ public class WarehouseModel {
         }
         return true;
     }
-
+    public String getSelectedProductCategory() {
+        if (theSelectedPro != null) {
+            try {
+                // ask the database for the category of this product
+                return databaseRW.getProductCategory(theSelectedPro.getProductId());
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
     private void updateView(UpdateForAction updateFor){
         switch (updateFor) {
@@ -353,6 +375,7 @@ public class WarehouseModel {
                 break;
             case UpdateForAction.BtnEdit:
                 view.updateEditProductChild(displayIdEdit,displayPriceEdit,displayStockEdit,displayDescriptionEdit,displayImageUrlEdit);
+                view.changeCategoryCB.setValue(getSelectedProductCategory());
                 break;
             case UpdateForAction.BtnDelete:
                 view.updateObservableProductList(productList); //update search page in view

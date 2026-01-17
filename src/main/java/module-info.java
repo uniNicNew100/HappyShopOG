@@ -5,6 +5,8 @@ module ci553.happyshop {
     requires javafx.graphics;
     requires java.desktop;
     //requires ci553.happyshop;
+    // requires ci553.happyshop;
+    //requires ci553.happyshop;
     //requires ci553.happyshop;
     //requires ci553.happyshop;
 
@@ -23,6 +25,6 @@ module ci553.happyshop {
     exports ci553.happyshop.client.orderTracker;
     exports ci553.happyshop.client.emergency;
     exports ci553.happyshop.systemSetup;
-    opens ci553.happyshop.client.catalogueBrowser to javafx.graphics;
+
 
 }

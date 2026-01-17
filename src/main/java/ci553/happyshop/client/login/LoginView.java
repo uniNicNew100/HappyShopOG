@@ -10,8 +10,6 @@ public class LoginView {
 
     public LoginController loginController;
     public Main main;
-    private final int WIDTH = UIStyle.customerWinWidth;
-    private final int HEIGHT = UIStyle.customerWinHeight;
 
     private TextField username;
     private TextField password;

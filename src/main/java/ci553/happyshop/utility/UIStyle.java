@@ -34,8 +34,8 @@ public record UIStyle() {
     public static final int trackerWinWidth = 210;
     public static final int trackerWinHeight = 300;
 
-    public static final int warehouseWinWidth = 630;
-    public static final int warehouseWinHeight = 300;
+    public static final int warehouseWinWidth = 800;
+    public static final int warehouseWinHeight = 500;
     public static final int AlertSimWinWidth = 300;
     public static final int AlertSimWinHeight = 170;
     public static final int HistoryWinWidth = 300;

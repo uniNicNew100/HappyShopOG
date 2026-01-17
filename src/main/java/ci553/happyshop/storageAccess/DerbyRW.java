@@ -43,6 +43,23 @@ public class DerbyRW implements DatabaseRW {
         }
         return productList;
     }
+    public String getProductCategory(String productId) throws SQLException {
+        String sql = "SELECT c.categoryName " +
+                "FROM ProductCategoryTable pc " +
+                "JOIN CategoryTable c ON pc.categoryID = c.categoryID " +
+                "WHERE pc.productID = ?";
+
+        try (Connection conn = DriverManager.getConnection(dbURL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, productId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("categoryName");
+            } else {
+                return null;
+            }
+        }
+    }
 
     //search  by product Id, return a product or null
     public Product searchByProductId(String proId) throws SQLException {
@@ -251,6 +268,52 @@ public class DerbyRW implements DatabaseRW {
         }
         finally {
             lock.unlock(); // Always release the lock after the operation
+        }
+    }
+
+    public void updateProductCategory(String productId, String categoryName)
+            throws SQLException {
+
+        lock.lock();
+
+        String getCategoryIdSql =
+                "SELECT categoryID FROM CategoryTable WHERE categoryName = ?";
+
+
+        String insertNewSql =
+                "INSERT INTO ProductCategoryTable (productID, categoryID) VALUES (?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(dbURL)) {
+            conn.setAutoCommit(false);
+
+            int categoryId;
+
+
+            try (PreparedStatement ps = conn.prepareStatement(getCategoryIdSql)) {
+                ps.setString(1, categoryName);
+                ResultSet rs = ps.executeQuery();
+
+                if (!rs.next()) {
+                    throw new SQLException("Category not found: " + categoryName);
+                }
+                categoryId = rs.getInt("categoryID");
+            }
+
+
+
+
+            try (PreparedStatement ps = conn.prepareStatement(insertNewSql)) {
+                ps.setString(1, productId);
+                ps.setInt(2, categoryId);
+                ps.executeUpdate();
+            }
+            conn.commit();
+            System.out.println("Category updated for product " + productId);
+
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            lock.unlock();
         }
     }
 

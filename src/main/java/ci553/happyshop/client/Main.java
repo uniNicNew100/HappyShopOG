@@ -62,7 +62,7 @@ public class Main extends Application {
 
         // Initializes the order map for the OrderHub. This must be called after starting the observer clients
         // (such as OrderTracker and Picker clients) to ensure they are properly registered for receiving updates.
-        initializeOrderMap();
+
 
         //startWarehouseClient();
 
@@ -82,14 +82,15 @@ public class Main extends Application {
     public void startCustomerClient(){
 
         DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
-
+        RemoveProductNotifier removeProductNotifier = new RemoveProductNotifier();
         CustomerView cusView = new CustomerView();
         CustomerController cusController = new CustomerController(this);
         CustomerModel cusModel = new CustomerModel();
 
         cusView.cusController = cusController;
         cusView.main = this;
-
+        removeProductNotifier.cusView = cusView;
+        cusModel.removeProductNotifier = removeProductNotifier;
         cusController.cusModel = cusModel;
         cusController.cusView = cusView;
         cusController.main = this;
@@ -121,23 +122,25 @@ public class Main extends Application {
      *
      * Also registers the PickerModel with the OrderHub to receive order notifications.
      */
-    private void startPickerClient(){
+    public void startPickerClient(){
         PickerModel pickerModel = new PickerModel();
         PickerView pickerView = new PickerView();
-        PickerController pickerController = new PickerController();
+        PickerController pickerController = new PickerController(this);
         pickerView.pickerController = pickerController;
         pickerController.pickerModel = pickerModel;
         pickerModel.pickerView = pickerView;
         pickerModel.registerWithOrderHub();
-        pickerView.start(new Stage());
+        pickerView.start(primaryStage);
+        initializeOrderMap();
     }
 
     //The OrderTracker GUI - for customer to track their order's state(Ordered, Progressing, Collected)
     //This client is simple and does not follow the MVC pattern, as it only registers with the OrderHub
     //to receive order status notifications. All logic is handled internally within the OrderTracker.
-    private void startOrderTracker(){
+    public void startOrderTracker(){
         OrderTracker orderTracker = new OrderTracker();
         orderTracker.registerWithOrderHub();
+        initializeOrderMap();
     }
 
     //initialize the orderMap<orderId, orderState> for OrderHub during system startup
@@ -155,9 +158,9 @@ public class Main extends Application {
      * which track the position of the Warehouse window and are triggered by the Model when needed.
      * These components are linked after launching the Warehouse interface.
      */
-    private void startWarehouseClient(){
+    public void startWarehouseClient(){
         WarehouseView view = new WarehouseView();
-        WarehouseController controller = new WarehouseController();
+        WarehouseController controller = new WarehouseController(this);
         WarehouseModel model = new WarehouseModel();
         DatabaseRW databaseRW = DatabaseRWFactory.createDatabaseRW();
 
@@ -166,7 +169,7 @@ public class Main extends Application {
         controller.model = model;
         model.view = view;
         model.databaseRW = databaseRW;
-        view.start(new Stage());
+        view.start(primaryStage);
 
         //create dependent views that need window info
         HistoryWindow historyWindow = new HistoryWindow();

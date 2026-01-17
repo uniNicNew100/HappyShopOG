@@ -86,9 +86,12 @@ public interface DatabaseRW {
      * @param productId the product ID to check
      * @return true if the ID is available, false if it already exists in the database
      */
+    void updateProductCategory(String productId, String categoryName) throws SQLException;
     boolean isProIdAvailable(String productId) throws SQLException;
     List<Product> getAllProducts();
     List<Product> getProductsByCategory(String category);
+    String getProductCategory(String productId) throws SQLException;
+
 }
 
 
