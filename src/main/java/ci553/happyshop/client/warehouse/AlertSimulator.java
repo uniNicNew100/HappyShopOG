@@ -44,7 +44,6 @@ public class AlertSimulator {
     public WarehouseView warehouseView;
     private  Stage window; //window for AlertSimulator
     private  Scene scene; // Scene for AlertSimulator
-    private  Label laErrorMsg;// Label to display error messages
     private TextArea taErrorMsg;// Label to display error messages
 
     // Create the Scene (only once)

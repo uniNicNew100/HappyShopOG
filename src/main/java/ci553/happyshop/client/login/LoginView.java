@@ -11,6 +11,9 @@ public class LoginView {
     public LoginController loginController;
     public Main main;
 
+    private final int WIDTH = UIStyle.customerWinWidth;
+    private final int HEIGHT = UIStyle.customerWinHeight;
+
     private TextField username;
     private TextField password;
 
@@ -18,13 +21,18 @@ public class LoginView {
 
         VBox root = new VBox(10);
 
+        root.setStyle(UIStyle.rootStyleBlue);
+
         username = new TextField();
         username.setPromptText("Username");
+        username.setStyle(UIStyle.textFiledStyle);
 
         password = new TextField();
         password.setPromptText("Password");
+        password.setStyle(UIStyle.textFiledStyle);
 
         Button btnLogin = new Button("Login");
+        btnLogin.setStyle(UIStyle.buttonStyle);
 
         btnLogin.setOnAction(e ->
                 loginController.authenticate(
@@ -33,6 +41,7 @@ public class LoginView {
         );
 
         Button btnCreateAccount = new Button("Create Account");
+        btnCreateAccount.setStyle(UIStyle.buttonStyle);
       btnCreateAccount.setOnAction(e ->
                 main.startCustomerCreate());
 

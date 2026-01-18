@@ -3,7 +3,6 @@ package ci553.happyshop.client.customer;
 import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.client.Main;
 import ci553.happyshop.client.login.LoginController;
-import ci553.happyshop.client.login.LoginView;
 
 import java.io.IOException;
 import java.sql.SQLException;

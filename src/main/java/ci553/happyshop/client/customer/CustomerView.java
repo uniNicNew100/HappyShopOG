@@ -11,7 +11,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -48,20 +47,14 @@ public class CustomerView  {
     private VBox vbSearchPage;
     private VBox vbProducts;
 
-    TextField tfId; //for user input on the search page. Made accessible so it can be accessed or modified by CustomerModel
-    TextField tfName; //for user input on the search page. Made accessible so it can be accessed by CustomerModel
     TextField searchField;
     ComboBox<String> filterComboBox;
     //four controllers needs updating when program going on
     private ImageView ivProduct; //image area in searchPage
-    private Label lbProductInfo;//product text info in searchPage
     private TextArea taTrolley; //in trolley Page
     private TextArea taReceipt;//in receipt page
     private Product selectedProduct;
-    String userSelectedImageUriEdit;
-    boolean isUserSelectedImageEdit = false;
-    private ImageView ivProNewPro;
-    String imageUriNewPro;
+
 
     public Product getSelectedProduct() {
         return selectedProduct;
@@ -73,7 +66,7 @@ public class CustomerView  {
     public Parent getRoot() {
 
         vbSearchPage = createSearchPage();
-        vbProducts = new VBox(10);          // ✅ product list container
+        vbProducts = new VBox(10);
         vbProducts.setPadding(new Insets(10));
 
         ScrollPane productScroll = new ScrollPane(vbProducts);
@@ -197,7 +190,7 @@ public class CustomerView  {
         try {
             ivPro = ( new ImageView(new Image(imageFullUri, 50,45, true,true)));
         } catch (Exception e) {
-            ivProduct.setImage(new Image("imageHolder.jpg", 60, 60, true, true));
+
         }
 
         Label lbInfo = new Label(
@@ -252,14 +245,19 @@ public class CustomerView  {
 
 
     public void update(String imageName, String trolley, String receipt) {
-
-        ivProduct.setImage(new Image(imageName));
-        //lbProductInfo.setText(searchResult);
+        imageName = selectedProduct.getProductImageName(); // Get image name (e.g. "0001.jpg")
+        String relativeImageUrl = StorageLocation.imageFolder + imageName;
+        // Get the full absolute path to the image
+        Path imageFullPath = Paths.get(relativeImageUrl).toAbsolutePath();
+        String imageFullUri = imageFullPath.toUri().toString();
+        ivProduct = new ImageView();
+        ivProduct.setImage(new Image(imageFullUri, 60, 60, true, true));
         taTrolley.setText(trolley);
         if (!receipt.equals("")) {
             showTrolleyOrReceiptPage(vbReceiptPage);
             taReceipt.setText(receipt);
         }
+
     }
 
     // Replaces the last child of hbRoot with the specified page.

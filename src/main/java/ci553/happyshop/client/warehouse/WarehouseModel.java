@@ -2,7 +2,6 @@ package ci553.happyshop.client.warehouse;
 
 import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.storageAccess.DatabaseRW;
-import ci553.happyshop.storageAccess.DerbyRW;
 import ci553.happyshop.storageAccess.ImageFileManager;
 import ci553.happyshop.utility.StorageLocation;
 

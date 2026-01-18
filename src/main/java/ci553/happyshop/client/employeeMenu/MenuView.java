@@ -1,6 +1,7 @@
 package ci553.happyshop.client.employeeMenu;
 
 import ci553.happyshop.client.Main;
+import ci553.happyshop.utility.UIStyle;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -15,6 +16,7 @@ public class MenuView {
     public Parent getRoot() {
 
         VBox root = new VBox(15);
+        root.setStyle(UIStyle.rootStyleWarehouse);
 
         Button orderTrackerBtn = new Button("Order Tracker");
         orderTrackerBtn.setOnAction(this::buttonClicked);

@@ -2,8 +2,6 @@ package ci553.happyshop.client.employeeMenu;
 
 import ci553.happyshop.client.Main;
 import ci553.happyshop.client.login.LoginController;
-import ci553.happyshop.client.orderTracker.OrderTrackerClient;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;

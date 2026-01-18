@@ -2,7 +2,6 @@ package ci553.happyshop.client;
 
 import ci553.happyshop.client.customer.*;
 
-import ci553.happyshop.client.emergency.EmergencyExit;
 import ci553.happyshop.client.login.LoginController;
 import ci553.happyshop.client.login.LoginModel;
 import ci553.happyshop.client.login.LoginView;
@@ -18,6 +17,7 @@ import ci553.happyshop.orderManagement.OrderHub;
 import ci553.happyshop.storageAccess.DatabaseRW;
 import ci553.happyshop.storageAccess.DatabaseRWFactory;
 import ci553.happyshop.utility.UIStyle;
+import ci553.happyshop.utility.WindowBounds;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -47,27 +47,12 @@ public class Main extends Application {
         launch(args); // Launches the JavaFX application and calls the @Override start()
     }
 
+
     //starts the system
     @Override
     public void start(Stage stage) throws IOException {
         this.primaryStage = stage;
         startLoginScene();
-        //startCustomerClient();
-       // startPickerClient();
-       // startOrderTracker();
-
-        //startCustomerClient();
-       // startPickerClient();
-        //startOrderTracker();
-
-        // Initializes the order map for the OrderHub. This must be called after starting the observer clients
-        // (such as OrderTracker and Picker clients) to ensure they are properly registered for receiving updates.
-
-
-        //startWarehouseClient();
-
-
-        //startEmergencyExit();
     }
 
     /** The customer GUI -search prodduct, add to trolley, cancel/submit trolley, view receipt
@@ -106,10 +91,6 @@ public class Main extends Application {
         primaryStage.show();
 
         cusController.loadAllProducts();
-
-        //RemoveProductNotifier removeProductNotifier = new RemoveProductNotifier();
-        //removeProductNotifier.cusView = cusView;
-        //cusModel.removeProductNotifier = removeProductNotifier;
     }
 
 
@@ -182,10 +163,7 @@ public class Main extends Application {
         alertSimulator.warehouseView = view;
     }
 
-    //starts the EmergencyExit GUI, - used to close the entire application immediatelly
-    private void startEmergencyExit(){
-        EmergencyExit.getEmergencyExit();
-    }
+
 
     public void startLoginScene(){
 
@@ -234,6 +212,8 @@ public class Main extends Application {
         primaryStage.show();
 
     }
+
+
 }
 
 
