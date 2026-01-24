@@ -396,10 +396,10 @@ public class DerbyRW implements DatabaseRW {
 
     public ArrayList<Product> getProductsByCategory(String category) {
         ArrayList<Product> productList = new ArrayList<>();
-        String query = "SELECT p.*\n" +
-                "FROM ProductTable p\n" +
-                "JOIN ProductCategoryTable pc ON p.productID = pc.productID\n" +
-                "JOIN CategoryTable c ON pc.categoryID = c.categoryID\n" +
+        String query = "SELECT p.*" +
+                "FROM ProductTable p" +
+                "JOIN ProductCategoryTable pc ON p.productID = pc.productID" +
+                "JOIN CategoryTable c ON pc.categoryID = c.categoryID" +
                 "WHERE c.categoryName = ?";
 
         try (Connection conn = DriverManager.getConnection(dbURL);

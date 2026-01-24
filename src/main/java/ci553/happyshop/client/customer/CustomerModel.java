@@ -16,11 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * TODO
- * You can either directly modify the CustomerModel class to implement the required tasks,
- * or create a subclass of CustomerModel and override specific methods where appropriate.
- */
+
 public class CustomerModel {
     public CustomerView cusView;
     public DatabaseRW databaseRW; //Interface type, not specific implementation
@@ -31,11 +27,17 @@ public class CustomerModel {
 
     // Four UI elements to be passed to CustomerView for display updates.
     private String imageName = "imageHolder.jpg";                // Image to show in product preview (Search Page)
-    public String displayLaSearchResult; // Label showing search result message (Search Page)
+    public String displayLaSearchResult;                        // Label showing search result message (Search Page)
     private String displayTaTrolley = "";                                // Text area content showing current trolley items (Trolley Page)
-    private String displayTaReceipt = "";                                // Text area content showing receipt after checkout (Receipt Page)
+    public String displayTaReceipt = "";                                // Text area content showing receipt after checkout (Receipt Page)
     public RemoveProductNotifier removeProductNotifier;
 
+    /**
+     *  Searches product database for items matching the text the user entered.
+     *  Tries to search by the product id and then the product name (description)
+     * Only products that have stock are returned
+     *
+     */
 
     public List<Product> searchProducts(String keyword) {
         List<Product> results = new ArrayList<>();
@@ -56,8 +58,10 @@ public class CustomerModel {
         return results;
     }
 
-
-
+    /**
+     *  Adds selected product to the trolley. If the customer tries to add the same product to the trolley
+     *  increase the amount added to the trolley by 1 and then update it in the view.
+     */
     public void addToTrolley(Product selected) {
         if (selected == null) {
             displayLaSearchResult = "Please select a product first";
@@ -70,8 +74,6 @@ public class CustomerModel {
             updateView();
             return;
         }
-
-
         boolean exists = false;
         for (Product p : trolley) {
             if (p.getProductId().equals(selected.getProductId())) {
@@ -81,7 +83,6 @@ public class CustomerModel {
                 break;
             }
         }
-
         if (!exists) {
             Product copy = new Product(
                     selected.getProductId(),
@@ -93,9 +94,8 @@ public class CustomerModel {
             copy.setOrderedQuantity(1);
             trolley.add(copy);
         }
-        trolley.sort((p1, p2) -> p1.getProductId().compareTo(p2.getProductId()));
-
-        displayTaTrolley = ProductListFormatter.buildString(trolley);
+        ArrayList<Product> groupedTrolley= groupProductsById(trolley);
+        displayTaTrolley = ProductListFormatter.buildString(groupedTrolley);
         displayTaReceipt = ""; // Clear receipt
         updateView();
     }
@@ -185,28 +185,35 @@ public class CustomerModel {
     }
     void closeReceipt(){
         displayTaReceipt="";
-        updateView();
     }
 
+    /**
+     * Struggling to get the image to display in the receipt so removed
+     */
     public void updateView() {
         String imageName = "imageHolder.jpg"; // default image
         cusView.update(imageName, displayTaTrolley, displayTaReceipt);
     }
+
+    /**
+     * returns products info by category
+     */
     public List<Product> filterByCategory(String category) {
 
         return databaseRW.getProductsByCategory(category);
     }
-
+    //gets all products
     public List<Product> getAllProducts() {
 
         return databaseRW.getAllProducts();
     }
-     // extra notes:
+
+    // extra notes:
      //Path.toUri(): Converts a Path object (a file or a directory path) to a URI object.
      //File.toURI(): Converts a File object (a file on the filesystem) to a URI object
 
-    //for test only
     public ArrayList<Product> getTrolley() {
         return trolley;
     }
+
 }

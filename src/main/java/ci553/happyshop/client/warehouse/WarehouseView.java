@@ -313,7 +313,7 @@ public class WarehouseView  {
         changeCategoryCB = new ComboBox<>();
         changeCategoryCB.getItems().addAll("Home","TVs","Lights","Kitchen","Office","Peripherals","PC","Laptops","Smartphones","Network","PC");
         HBox hbCat = new HBox(10, laCat, changeCategoryCB);
-        //VBox for id and price
+        //VBox for id and price, category
         VBox vbIdPrice = new VBox(10, hbId, hbPrice, hbCat);
 
         // Product Image

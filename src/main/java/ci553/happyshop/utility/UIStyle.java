@@ -21,7 +21,12 @@ package ci553.happyshop.utility;
  *  - Cleaner syntax: Avoids unnecessary boilerplate (constructors, getters, etc.).
  */
 
-public record UIStyle() {
+public final class UIStyle {
+
+    //private constructor prevents instantiation
+    private UIStyle() {
+        throw new UnsupportedOperationException("UIStyle is a utility class");
+    }
 
     public static final int customerWinWidth = 900;
     public static final int customerWinHeight = 400;

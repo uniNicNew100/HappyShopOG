@@ -55,13 +55,18 @@ public class CustomerView  {
     private TextArea taReceipt;//in receipt page
     private Product selectedProduct;
 
-
+    /**
+     * returns the selected product
+     */
     public Product getSelectedProduct() {
         return selectedProduct;
     }
 
 
-
+    /**
+     * Initialises the customer client scenes( product list, trolley , receipt) so that it can be called
+     * in main.
+     */
 
     public Parent getRoot() {
 
@@ -91,7 +96,7 @@ public class CustomerView  {
         return hbRoot;
 
     }
-
+    //Creates search page
     private VBox createSearchPage() {
 
         Label title = new Label("Product Catalogue");
@@ -128,7 +133,7 @@ public class CustomerView  {
 
         return vbSearchPage;
     }
-
+    //creates trolley page
     private VBox CreateTrolleyPage() {
         Label laPageTitle = new Label("🛒🛒  Trolley 🛒🛒");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
@@ -159,7 +164,7 @@ public class CustomerView  {
         vbTrolleyPage.setStyle("-fx-padding: 15px;");
         return vbTrolleyPage;
     }
-
+    //creates receipt page
     private VBox createReceiptPage() {
         Label laPageTitle = new Label("Receipt");
         laPageTitle.setStyle(UIStyle.labelTitleStyle);
@@ -179,6 +184,7 @@ public class CustomerView  {
         vbReceiptPage.setStyle(UIStyle.rootStyleYellow);
         return vbReceiptPage;
     }
+    //creates area for products to be displayed
     private HBox createProductBox(Product product) {
         String imageName = product.getProductImageName(); // Get image name (e.g. "0001.jpg")
         String relativeImageUrl = StorageLocation.imageFolder + imageName;
@@ -243,7 +249,7 @@ public class CustomerView  {
         }
     }
 
-
+    //The image doesnt currently display. Do not really understand the bug
     public void update(String imageName, String trolley, String receipt) {
         imageName = selectedProduct.getProductImageName(); // Get image name (e.g. "0001.jpg")
         String relativeImageUrl = StorageLocation.imageFolder + imageName;
@@ -269,13 +275,16 @@ public class CustomerView  {
         }
     }
 
+    //displays list of products on product box
     public void showProducts(List<Product> products) {
         vbProducts.getChildren().clear();
 
         for (Product product : products) {
             vbProducts.getChildren().add(createProductBox(product));
+
         }
     }
+    //returns window position and size
     public WindowBounds getWindowBounds() {
         Stage stage = (Stage) hbRoot.getScene().getWindow();
         return new WindowBounds(

@@ -16,7 +16,7 @@ public class CreateAccView {
     private TextField password;
     private TextField confirmPass;
 
-
+    //returns root node so that main can start account creation scene
     public Parent getRoot() {
 
         root = new VBox(10);

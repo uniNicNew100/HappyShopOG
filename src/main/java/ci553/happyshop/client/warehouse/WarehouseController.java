@@ -8,6 +8,10 @@ import java.sql.SQLException;
 public class WarehouseController {
     public WarehouseModel model;
     public Main main;
+    /**
+     Constructor that refrences the main class so that warehouse controller can call a method to switch scenes
+     or start another view
+     */
     public WarehouseController(Main main) {
         this.main = main;
     }
