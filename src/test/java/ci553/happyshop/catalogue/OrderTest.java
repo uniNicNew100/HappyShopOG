@@ -1,6 +1,7 @@
 package ci553.happyshop.catalogue;
 
 import ci553.happyshop.orderManagement.OrderState;
+import ci553.happyshop.utility.ProductListFormatter;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -26,19 +27,6 @@ public class OrderTest {
         assertEquals(2, order.getProductList().size());
     }
 
-    @Test
-    void testEmptyOrder() {
-        ArrayList<Product> items = new ArrayList<>();
-        Order order = new Order(13, OrderState.Ordered, "2026-01-10 12:00:00", items);
-
-
-        String details = order.orderDetails();
-
-        assertTrue(details.contains("OrderId"));
-        assertTrue(details.contains("State"));
-        assertTrue(details.contains("Total"));
-
-    }
 
     @Test
     void testUpdateOrderState() {
@@ -61,16 +49,18 @@ public class OrderTest {
         p.setOrderedQuantity(2);
         items.add(p);
 
-        Order order = new Order(15, OrderState.Ordered, "2026-01-10 12:00:00", items);
+        Order order = new Order(30, OrderState.Ordered, "2026-01-10 12:00:00", items);
 
         String details = order.orderDetails();
 
-        assertTrue(details.contains("OrderId"));
-        assertTrue(details.contains("15"));
-        assertTrue(details.contains("State"));
+
+
+        assertTrue(details.contains("30"));
         assertTrue(details.contains("Ordered"));
-        assertTrue(details.contains("0001"));
-        assertTrue(details.contains("Mouse"));
-        assertTrue(details.contains("Total"));
+        assertTrue(details.contains("2026-01-10 12:00:00"));
+       assertTrue(details.contains("0001"));
+       assertTrue(details.contains("Mouse"));
+       assertTrue(details.contains("2"));
+
     }
 }

@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class CustomerModel {
@@ -23,10 +20,10 @@ public class CustomerModel {
                                   //Benefits: Flexibility: Easily change the database implementation.
 
     private Product theProduct =null; // product found from search
-    private ArrayList<Product> trolley =  new ArrayList<>(); // a list of products in trolley
+    private final ArrayList<Product> trolley =  new ArrayList<>(); // a list of products in trolley
 
     // Four UI elements to be passed to CustomerView for display updates.
-    private String imageName = "imageHolder.jpg";                // Image to show in product preview (Search Page)
+    private final String imageName = "imageHolder.jpg";                // Image to show in product preview (Search Page)
     public String displayLaSearchResult;                        // Label showing search result message (Search Page)
     private String displayTaTrolley = "";                                // Text area content showing current trolley items (Trolley Page)
     public String displayTaReceipt = "";                                // Text area content showing receipt after checkout (Receipt Page)
@@ -94,11 +91,13 @@ public class CustomerModel {
             copy.setOrderedQuantity(1);
             trolley.add(copy);
         }
-        ArrayList<Product> groupedTrolley= groupProductsById(trolley);
-        displayTaTrolley = ProductListFormatter.buildString(groupedTrolley);
+        trolley.sort(Comparator.comparing(Product::getProductId)); //sort trolley by productID
+        displayTaTrolley = ProductListFormatter.buildString(trolley);
         displayTaReceipt = ""; // Clear receipt
         updateView();
     }
+
+
 
     /**
      * Groups products by their productId to optimize database queries and updates.
@@ -165,11 +164,11 @@ public class CustomerModel {
 
                 //You can use the provided RemoveProductNotifier class and its showRemovalMsg method for this purpose.
                 //remember close the message window where appropriate (using method closeNotifierWindow() of RemoveProductNotifier class)
-                displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg.toString();
+                displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg;
 
             }
         }
-
+            trolley.sort(Comparator.comparing(Product::getProductId)); //added to sort trolley by productId
             displayTaTrolley =  ProductListFormatter.buildString(trolley);
 
         updateView();

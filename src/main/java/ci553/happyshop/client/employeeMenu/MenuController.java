@@ -30,7 +30,7 @@ public class MenuController {
                 break;
 
             case "Logout":
-                loginController.clearCurrentUser();
+                LoginController.clearCurrentUser();
                 main.startLoginScene();
                 break;
         }

@@ -32,7 +32,7 @@ public class WarehouseModel {
     public HistoryWindow historyWindow;
     public AlertSimulator alertSimulator;
     private String displayInputErrorMsg =""; //error message showing in the alertSimulator
-    private ArrayList<String> displayManageHistory = new ArrayList<>();// Manage Product history
+    private final ArrayList<String> displayManageHistory = new ArrayList<>();// Manage Product history
                                                                //shows in the HistoryWindow
     private enum ManageProductType{
         Edited,
@@ -146,7 +146,7 @@ public class WarehouseModel {
             String textStock =view.tfStockEdit.getText().trim();
             String description = view.taDescriptionEdit.getText().trim();
 
-            if(view.isUserSelectedImageEdit == true){  //if the user changed image
+            if(view.isUserSelectedImageEdit){  //if the user changed image
                 ImageFileManager.deleteImageFile(StorageLocation.imageFolder, imageName); //delete the old image
                 //copy the user selected image to project image folder
                 //we use productId as image name, but we need to get its extension from the user selected image
@@ -154,7 +154,7 @@ public class WarehouseModel {
                 imageName = newImageNameWithExtension;
             }
 
-            if(validateInputEditChild(textPrice,textStock,description)==false){
+            if(!validateInputEditChild(textPrice, textStock, description)){
                 updateView(UpdateForAction.ShowInputErrorMsg);
             }
             else{
@@ -187,7 +187,7 @@ public class WarehouseModel {
         int newStock =oldStock;
         String TextChangeBy = view.tfChangeByEdit.getText().trim();
         if(!TextChangeBy.isEmpty()){
-            if(validateInputChangeStockBy(TextChangeBy)==false){
+            if(!validateInputChangeStockBy(TextChangeBy)){
                 updateView(UpdateForAction.ShowInputErrorMsg);
             } else{
                 int changeBy = Integer.parseInt(TextChangeBy);
@@ -232,7 +232,7 @@ public class WarehouseModel {
         String iPath = view.imageUriNewPro; //image Path from the imageChooser in View class
 
         //validate input
-        if (validateInputNewProChild(theNewProId, textPrice, textStock, description, iPath) ==false) {
+        if (!validateInputNewProChild(theNewProId, textPrice, textStock, description, iPath)) {
             updateView(UpdateForAction.ShowInputErrorMsg);
         } else {
             //copy the user selected image to project image folder and using productId as image name

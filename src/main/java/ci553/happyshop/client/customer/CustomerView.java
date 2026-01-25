@@ -1,4 +1,5 @@
 package ci553.happyshop.client.customer;
+
 import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.client.Main;
 import ci553.happyshop.client.login.LoginView;
@@ -27,13 +28,13 @@ import java.util.List;
 
 /**
  * The CustomerView is separated into two sections by a line :
- *
+ * <p>
  * 1. Search Page – Always visible, allowing customers to browse and search for products.
  * 2. the second page – display either the Trolley Page or the Receipt Page
- *    depending on the current context. Only one of these is shown at a time.
+ * depending on the current context. Only one of these is shown at a time.
  */
 
-public class CustomerView  {
+public class CustomerView {
     public CustomerController cusController;
     public Main main;
 
@@ -96,6 +97,7 @@ public class CustomerView  {
         return hbRoot;
 
     }
+
     //Creates search page
     private VBox createSearchPage() {
 
@@ -119,7 +121,6 @@ public class CustomerView  {
         btnFilter.setOnAction(this::buttonClicked);
 
 
-
         HBox hbControls = new HBox(10,
                 searchField, btnSearch, filterComboBox, btnFilter
         );
@@ -133,6 +134,7 @@ public class CustomerView  {
 
         return vbSearchPage;
     }
+
     //creates trolley page
     private VBox CreateTrolleyPage() {
         Label laPageTitle = new Label("🛒🛒  Trolley 🛒🛒");
@@ -140,7 +142,7 @@ public class CustomerView  {
 
         taTrolley = new TextArea();
         taTrolley.setEditable(false);
-        taTrolley.setPrefSize(WIDTH/2, HEIGHT-50);
+        taTrolley.setPrefSize(WIDTH / 2, HEIGHT - 50);
 
         Button btnCancel = new Button("Cancel");
         btnCancel.setOnAction(this::buttonClicked);
@@ -154,7 +156,7 @@ public class CustomerView  {
         btnLogout.setOnAction(this::buttonClicked);
         btnLogout.setStyle(UIStyle.buttonStyle);
 
-        HBox hbBtns = new HBox(10, btnCancel,btnCheckout,btnLogout);
+        HBox hbBtns = new HBox(10, btnCancel, btnCheckout, btnLogout);
         hbBtns.setStyle("-fx-padding: 15px;");
         hbBtns.setAlignment(Pos.CENTER);
 
@@ -164,6 +166,7 @@ public class CustomerView  {
         vbTrolleyPage.setStyle("-fx-padding: 15px;");
         return vbTrolleyPage;
     }
+
     //creates receipt page
     private VBox createReceiptPage() {
         Label laPageTitle = new Label("Receipt");
@@ -171,7 +174,7 @@ public class CustomerView  {
 
         taReceipt = new TextArea();
         taReceipt.setEditable(false);
-        taReceipt.setPrefSize(WIDTH/2, HEIGHT-50);
+        taReceipt.setPrefSize(WIDTH / 2, HEIGHT - 50);
 
         Button btnCloseReceipt = new Button("OK & Close"); //btn for closing receipt and showing trolley page
         btnCloseReceipt.setStyle(UIStyle.buttonStyle);
@@ -184,6 +187,7 @@ public class CustomerView  {
         vbReceiptPage.setStyle(UIStyle.rootStyleYellow);
         return vbReceiptPage;
     }
+
     //creates area for products to be displayed
     private HBox createProductBox(Product product) {
         String imageName = product.getProductImageName(); // Get image name (e.g. "0001.jpg")
@@ -194,7 +198,7 @@ public class CustomerView  {
         ImageView ivPro = new ImageView();
 
         try {
-            ivPro = ( new ImageView(new Image(imageFullUri, 50,45, true,true)));
+            ivPro = (new ImageView(new Image(imageFullUri, 50, 45, true, true)));
         } catch (Exception e) {
 
         }
@@ -219,7 +223,7 @@ public class CustomerView  {
             }
         });
 
-        HBox productBox = new HBox(15,ivPro, lbInfo, btnAdd);
+        HBox productBox = new HBox(15, ivPro, lbInfo, btnAdd);
         productBox.setPadding(new Insets(10));
         productBox.setAlignment(Pos.CENTER_LEFT);
         productBox.setStyle("-fx-border-color: lightgray; -fx-border-radius: 5;");
@@ -229,20 +233,19 @@ public class CustomerView  {
 
 
     private void buttonClicked(ActionEvent event) {
-        try{
-            Button btn = (Button)event.getSource();
+        try {
+            Button btn = (Button) event.getSource();
             String action = btn.getText();
-            if(action.equals("Add to Trolley")){
+            if (action.equals("Add to Trolley")) {
                 showTrolleyOrReceiptPage(vbTrolleyPage); //ensure trolleyPage shows if the last customer did not close their receiptPage
             }
-            if(action.equals("OK & Close")){
+            if (action.equals("OK & Close")) {
                 showTrolleyOrReceiptPage(vbTrolleyPage);
             }
 
 
             cusController.doAction(action);
-        }
-        catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -284,6 +287,7 @@ public class CustomerView  {
 
         }
     }
+
     //returns window position and size
     public WindowBounds getWindowBounds() {
         Stage stage = (Stage) hbRoot.getScene().getWindow();

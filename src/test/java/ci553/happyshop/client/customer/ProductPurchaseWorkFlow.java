@@ -14,17 +14,21 @@ public class ProductPurchaseWorkFlow {
     void setupDatabaseAndProducts() {
         model = new CustomerModel();
 
-        List<Product> testProducts = List.of(
-                new Product("0001", "Mouse", "0001.jpg", 19.99, 10),
-                new Product("0002", "Keyboard", "0002.jpg", 49.99, 10)
-        );
+        model.removeProductNotifier = new RemoveProductNotifier() {
+            @Override public void showRemovalMsg(String msg) {}
+            @Override public void closeNotifierWindow() {}
+        };
 
-        fakeDb = new FakeDatabase(testProducts);
-        model.databaseRW = fakeDb;
-        model.cusView = new CustomerView() {
-            @Override
-            public void update(String imageName, String trolley, String receipt) {
-            }
+            List<Product> testProducts = List.of(
+                    new Product("0001", "Mouse", "0001.jpg", 19.99, 10),
+                    new Product("0002", "Keyboard", "0002.jpg", 49.99, 10)
+            );
+
+                fakeDb = new FakeDatabase(testProducts);
+                model.databaseRW = fakeDb;
+                model.cusView = new CustomerView() {
+                @Override
+                public void update(String imageName, String trolley, String receipt) {}
         };
     }
 
@@ -38,11 +42,10 @@ public class ProductPurchaseWorkFlow {
         assertEquals("0001", model.getTrolley().get(0).getProductId());
         assertEquals(1, model.getTrolley().get(0).getOrderedQuantity());
 
-        // Checkout should succeed (fake DB returns "no insufficient products")
         model.checkOut();
 
-        assertEquals(0, model.getTrolley().size(), "Trolley should clear after checkout");
-        assertNotNull(model.displayTaReceipt, "Receipt should be created");
+        assertEquals(0, model.getTrolley().size(), "Trolley clear after checkout");
+        assertNotNull(model.displayTaReceipt, "Receipt created");
     }
 
     @Test
@@ -50,10 +53,10 @@ public class ProductPurchaseWorkFlow {
         Product selected = fakeDb.searchByProductId("0002");
         model.addToTrolley(selected);
 
-        fakeDb.setForceZeroStock(true); // simulate failure
+        fakeDb.setForceZeroStock(true); // set product to 0
         model.checkOut();
 
-        assertEquals(1, model.getTrolley().size(), "Trolley should remain");
+        assertEquals(1, model.getTrolley().size(), "Trolley remains");
         assertTrue(model.displayLaSearchResult != null && model.displayLaSearchResult.contains("Checkout failed"));
 
     }

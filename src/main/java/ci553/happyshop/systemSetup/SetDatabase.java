@@ -32,10 +32,10 @@ public class SetDatabase {
     private static final String dbURL = DatabaseRWFactory.dbURL + ";create=true";
                                   //the value is "jdbc:derby:happyShopDB;create=true"
 
-    private static Path imageWorkingFolderPath = StorageLocation.imageFolderPath;
-    private static Path imageBackupFolderPath = StorageLocation.imageResetFolderPath;
+    private static final Path imageWorkingFolderPath = StorageLocation.imageFolderPath;
+    private static final Path imageBackupFolderPath = StorageLocation.imageResetFolderPath;
 
-    private String[] tables = {"ProductTable","LoginTable","CategoryTable","ProductCategoryTable"};
+    private final String[] tables = {"ProductTable","LoginTable","CategoryTable","ProductCategoryTable"};
     // Currently only "ProductTable" exists, but using an array allows easy expansion
     // if more tables need to be processed in the future without changing the logic structure.
 
