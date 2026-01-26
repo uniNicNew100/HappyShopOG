@@ -10,7 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * Behaviour-based test: verifies that CustomerModel collaborates with DatabaseRW during checkout.
+ * Behaviour-based test: verifies that CustomerModel interacts with DatabaseRW during checkout.
  */
 public class CustDatabaseMockInteraction {
 
@@ -34,18 +34,15 @@ public class CustDatabaseMockInteraction {
         };
     }
     @Test
-    void testCheckoutCallsPurchaseStock() throws Exception {
-        // Arrange
+    void testCheckoutCallsPurchaseStocksOnce() throws Exception {
+
         Product p = new Product("0001", "Mouse", "0001.jpg", 19.99, 10);
         model.addToTrolley(p);
 
-        // stub: no insufficient products
         when(dbMock.purchaseStocks(any(ArrayList.class))).thenReturn(new ArrayList<>());
 
-        // Act
         model.checkOut();
 
-        // Assert: verify collaborator call
         verify(dbMock, times(1)).purchaseStocks(any(ArrayList.class));
     }
 }

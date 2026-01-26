@@ -4,12 +4,8 @@ import ci553.happyshop.catalogue.Order;
 import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.storageAccess.DatabaseRW;
 import ci553.happyshop.orderManagement.OrderHub;
-import ci553.happyshop.utility.StorageLocation;
 import ci553.happyshop.utility.ProductListFormatter;
-
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -91,7 +87,7 @@ public class CustomerModel {
             copy.setOrderedQuantity(1);
             trolley.add(copy);
         }
-        trolley.sort(Comparator.comparing(Product::getProductId)); //sort trolley by productID
+        trolley.sort(Comparator.comparing(Product::getProductId)); //sort trolley by comparing productIDs
         displayTaTrolley = ProductListFormatter.buildString(trolley);
         displayTaReceipt = ""; // Clear receipt
         updateView();

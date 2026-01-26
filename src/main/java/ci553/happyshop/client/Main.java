@@ -86,10 +86,8 @@ public class Main extends Application {
         Scene scene = new Scene(cusView.getRoot(),
                 UIStyle.customerWinWidth,
                 UIStyle.customerWinHeight);
-
         primaryStage.setScene(scene);
         primaryStage.show();
-
         cusController.loadAllProducts();
     }
 

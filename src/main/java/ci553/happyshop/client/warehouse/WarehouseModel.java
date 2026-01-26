@@ -141,7 +141,6 @@ public class WarehouseModel {
             String id=theSelectedPro.getProductId();
             System.out.println("theSelectedPro " + id); //debug purpose
             String imageName = theSelectedPro.getProductImageName();
-
             String textPrice =view.tfPriceEdit.getText().trim();
             String textStock =view.tfStockEdit.getText().trim();
             String description = view.taDescriptionEdit.getText().trim();
@@ -153,7 +152,6 @@ public class WarehouseModel {
                 String newImageNameWithExtension = ImageFileManager.copyFileToDestination(view.userSelectedImageUriEdit, StorageLocation.imageFolder,id);
                 imageName = newImageNameWithExtension;
             }
-
             if(!validateInputEditChild(textPrice, textStock, description)){
                 updateView(UpdateForAction.ShowInputErrorMsg);
             }
@@ -173,8 +171,6 @@ public class WarehouseModel {
                 updateView(UpdateForAction.ShowInputErrorMsg);
                 return;
             }
-
-
             databaseRW.updateProductCategory(id, selectedCategory);
         }
         else{
