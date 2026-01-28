@@ -1,0 +1,10 @@
+Order ID: 5 
+State: Collected
+OrderedDateTime: 2026-01-15 17:47:50 
+ProgressingDateTime: 2026-01-15 19:47:16
+CollectedDateTime: 2026-01-15 19:47:21
+Items:
+ 0001    40 inch TV         (100) £26900.00
+--------------------------------------------
+ Total                               £26900.00
+

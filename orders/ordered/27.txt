@@ -1,0 +1,10 @@
+Order ID: 27 
+State: Ordered 
+OrderedDateTime: 2026-01-25 18:42:58 
+ProgressingDateTime:  
+CollectedDateTime: 
+Items:
+ 0001    Mouse              ( 1) £  19.99
+--------------------------------------------
+ Total                               £  19.99
+
