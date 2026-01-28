@@ -395,27 +395,32 @@ public class DerbyRW implements DatabaseRW {
 
     public ArrayList<Product> getProductsByCategory(String category) {
         ArrayList<Product> productList = new ArrayList<>();
-        String query = "SELECT p.*" +
-                "FROM ProductTable p" +
-                "JOIN ProductCategoryTable pc ON p.productID = pc.productID" +
-                "JOIN CategoryTable c ON pc.categoryID = c.categoryID" +
-                "WHERE c.categoryName = ?";
+
+        String query =
+                "SELECT p.* " +
+                        "FROM ProductTable p " +
+                        "JOIN ProductCategoryTable pc ON p.productID = pc.productID " +
+                        "JOIN CategoryTable c ON pc.categoryID = c.categoryID " +
+                        "WHERE c.categoryName = ?";
 
         try (Connection conn = DriverManager.getConnection(dbURL);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, category);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     productList.add(makeProObjFromDbRecord(rs));
                 }
             }
+
         } catch (SQLException e) {
             System.out.println("Database query error, getProductsByCategory: " + category + " " + e.getMessage());
         }
 
         return productList;
     }
+
     //   /images/0001TV.jpg
     //warehouse adds a new product to database
     public void insertNewProduct(String id, String des,double price,String image,int stock) throws SQLException {
