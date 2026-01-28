@@ -46,7 +46,8 @@ public class OrderFileManager {
 
     //Creates a new order file in the specified directory with the given content.
     public static void createOrderFile(Path dir, int orderId, String orderDetail) throws IOException {
-        String orderFileName = String.valueOf(orderId)+".txt";
+       // Files.createDirectories(dir);
+        String orderFileName = orderId +".txt";
         Path path = dir.resolve(orderFileName); // eg. orders/ordered/12.txt
         if(Files.notExists(path)) {
             Files.createFile(path);
@@ -66,12 +67,13 @@ public class OrderFileManager {
     //Progressing state in orders/progressing
     //Collected state in orders/collected
     public static boolean updateAndMoveOrderFile(int orderId, OrderState newState, Path sourceDir, Path targetDir) throws IOException {
-        String orderFileName = String.valueOf(orderId)+".txt";
+        String orderFileName = orderId +".txt";
         Path sourcePath = sourceDir.resolve(orderFileName);
         Path targetPath = targetDir.resolve(orderFileName);
         if (Files.exists(sourcePath)) {
             updateOrderStateAndTime(sourceDir,orderId,newState); //Edit the file to update order state and add time
             if(!sourceDir.equals(targetDir)) //Move the file only if the source and destination are different
+                //Files.createDirectories(targetDir);
                 Files.move(sourcePath,targetPath);
             return true;
         }
@@ -87,8 +89,8 @@ public class OrderFileManager {
      * the original file once updates are complete.
      */
     private static void updateOrderStateAndTime(Path sourceDir, int orderId, OrderState newState) throws IOException {
-        String orderFileName = String.valueOf(orderId)+".txt";
-        String tempFileName = String.valueOf(orderId) + "_temp.txt";
+        String orderFileName = orderId +".txt";
+        String tempFileName = orderId + "_temp.txt";
         Path sourcePath = sourceDir.resolve(orderFileName);
         Path tempFilePath = sourceDir.resolve(tempFileName);
 
@@ -119,7 +121,7 @@ public class OrderFileManager {
 
     //Reads the content of an order file as a single string.
     public static String readOrderFile(Path dir, int orderId) throws IOException {
-        String orderFileName = String.valueOf(orderId)+".txt";
+        String orderFileName = orderId +".txt";
         Path path = dir.resolve(orderFileName);
         // Check if the file exists before reading
         if (!Files.exists(path)) {

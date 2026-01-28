@@ -38,13 +38,12 @@ import javafx.stage.StageStyle;
  */
 
 public class AlertSimulator {
-    private static int WIDTH = UIStyle.AlertSimWinWidth;
-    private static int HEIGHT = UIStyle.AlertSimWinHeight;
+    private static final int WIDTH = UIStyle.AlertSimWinWidth;
+    private static final int HEIGHT = UIStyle.AlertSimWinHeight;
 
     public WarehouseView warehouseView;
     private  Stage window; //window for AlertSimulator
     private  Scene scene; // Scene for AlertSimulator
-    private  Label laErrorMsg;// Label to display error messages
     private TextArea taErrorMsg;// Label to display error messages
 
     // Create the Scene (only once)

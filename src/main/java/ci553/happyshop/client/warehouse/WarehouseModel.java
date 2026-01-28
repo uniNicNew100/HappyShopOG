@@ -2,7 +2,6 @@ package ci553.happyshop.client.warehouse;
 
 import ci553.happyshop.catalogue.Product;
 import ci553.happyshop.storageAccess.DatabaseRW;
-import ci553.happyshop.storageAccess.DerbyRW;
 import ci553.happyshop.storageAccess.ImageFileManager;
 import ci553.happyshop.utility.StorageLocation;
 
@@ -33,7 +32,7 @@ public class WarehouseModel {
     public HistoryWindow historyWindow;
     public AlertSimulator alertSimulator;
     private String displayInputErrorMsg =""; //error message showing in the alertSimulator
-    private ArrayList<String> displayManageHistory = new ArrayList<>();// Manage Product history
+    private final ArrayList<String> displayManageHistory = new ArrayList<>();// Manage Product history
                                                                //shows in the HistoryWindow
     private enum ManageProductType{
         Edited,
@@ -142,20 +141,18 @@ public class WarehouseModel {
             String id=theSelectedPro.getProductId();
             System.out.println("theSelectedPro " + id); //debug purpose
             String imageName = theSelectedPro.getProductImageName();
-
             String textPrice =view.tfPriceEdit.getText().trim();
             String textStock =view.tfStockEdit.getText().trim();
             String description = view.taDescriptionEdit.getText().trim();
 
-            if(view.isUserSelectedImageEdit == true){  //if the user changed image
+            if(view.isUserSelectedImageEdit){  //if the user changed image
                 ImageFileManager.deleteImageFile(StorageLocation.imageFolder, imageName); //delete the old image
                 //copy the user selected image to project image folder
                 //we use productId as image name, but we need to get its extension from the user selected image
                 String newImageNameWithExtension = ImageFileManager.copyFileToDestination(view.userSelectedImageUriEdit, StorageLocation.imageFolder,id);
                 imageName = newImageNameWithExtension;
             }
-
-            if(validateInputEditChild(textPrice,textStock,description)==false){
+            if(!validateInputEditChild(textPrice, textStock, description)){
                 updateView(UpdateForAction.ShowInputErrorMsg);
             }
             else{
@@ -167,6 +164,14 @@ public class WarehouseModel {
                 updateView(UpdateForAction.BtnSummitEdit);
                 theSelectedPro=null;
             }
+            String selectedCategory = view.changeCategoryCB.getValue();
+
+            if (selectedCategory == null) {
+                displayInputErrorMsg = "Please select a category.";
+                updateView(UpdateForAction.ShowInputErrorMsg);
+                return;
+            }
+            databaseRW.updateProductCategory(id, selectedCategory);
         }
         else{
             System.out.println("No Product Selected");
@@ -178,7 +183,7 @@ public class WarehouseModel {
         int newStock =oldStock;
         String TextChangeBy = view.tfChangeByEdit.getText().trim();
         if(!TextChangeBy.isEmpty()){
-            if(validateInputChangeStockBy(TextChangeBy)==false){
+            if(!validateInputChangeStockBy(TextChangeBy)){
                 updateView(UpdateForAction.ShowInputErrorMsg);
             } else{
                 int changeBy = Integer.parseInt(TextChangeBy);
@@ -223,7 +228,7 @@ public class WarehouseModel {
         String iPath = view.imageUriNewPro; //image Path from the imageChooser in View class
 
         //validate input
-        if (validateInputNewProChild(theNewProId, textPrice, textStock, description, iPath) ==false) {
+        if (!validateInputNewProChild(theNewProId, textPrice, textStock, description, iPath)) {
             updateView(UpdateForAction.ShowInputErrorMsg);
         } else {
             //copy the user selected image to project image folder and using productId as image name
@@ -344,7 +349,19 @@ public class WarehouseModel {
         }
         return true;
     }
-
+    public String getSelectedProductCategory() {
+        if (theSelectedPro != null) {
+            try {
+                // ask the database for the category of this product
+                return databaseRW.getProductCategory(theSelectedPro.getProductId());
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
     private void updateView(UpdateForAction updateFor){
         switch (updateFor) {
@@ -353,6 +370,7 @@ public class WarehouseModel {
                 break;
             case UpdateForAction.BtnEdit:
                 view.updateEditProductChild(displayIdEdit,displayPriceEdit,displayStockEdit,displayDescriptionEdit,displayImageUrlEdit);
+                view.changeCategoryCB.setValue(getSelectedProductCategory());
                 break;
             case UpdateForAction.BtnDelete:
                 view.updateObservableProductList(productList); //update search page in view

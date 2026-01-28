@@ -32,10 +32,10 @@ public class SetDatabase {
     private static final String dbURL = DatabaseRWFactory.dbURL + ";create=true";
                                   //the value is "jdbc:derby:happyShopDB;create=true"
 
-    private static Path imageWorkingFolderPath = StorageLocation.imageFolderPath;
-    private static Path imageBackupFolderPath = StorageLocation.imageResetFolderPath;
+    private static final Path imageWorkingFolderPath = StorageLocation.imageFolderPath;
+    private static final Path imageBackupFolderPath = StorageLocation.imageResetFolderPath;
 
-    private String[] tables = {"ProductTable"};
+    private final String[] tables = {"ProductTable","LoginTable","CategoryTable","ProductCategoryTable"};
     // Currently only "ProductTable" exists, but using an array allows easy expansion
     // if more tables need to be processed in the future without changing the logic structure.
 
@@ -102,6 +102,42 @@ public class SetDatabase {
                 "INSERT INTO ProductTable VALUES('0010', 'USB4 drive', 9.99, '0010.jpg',100)",
                 "INSERT INTO ProductTable VALUES('0011', 'USB5 drive', 10.99, '0011.jpg',100)",
                 "INSERT INTO ProductTable VALUES('0012', 'USB6 drive', 10.99, '0011.jpg',100)",
+
+
+                "CREATE TABLE LoginTable(" +
+                        "username VARCHAR(50) PRIMARY KEY," +
+                        "password VARCHAR(64) NOT NULL," +
+                        "role VARCHAR(20) NOT NULL" + ")",
+
+                "INSERT INTO LoginTable VALUES('admin','admin123','employee')",
+                "INSERT INTO LoginTable VALUES('cust','cust123','customer')",
+
+                "CREATE TABLE CategoryTable(" +
+                        "categoryID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY," +
+                        "categoryName VARCHAR(100)" +
+                        ")",
+
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Home')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('TVs')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Lights')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Kitchen')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Office')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Peripherals')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Laptops')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Smartphones')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('Network')",
+                "INSERT INTO CategoryTable (categoryName) VALUES ('PC')",
+
+                "CREATE TABLE ProductCategoryTable("+
+                        "productID CHAR(4)," +
+                        "categoryID INT,"+
+                        "PRIMARY KEY (productID, categoryID),"+
+                        "FOREIGN KEY (productID) REFERENCES ProductTable(productID)," +
+                        "FOREIGN KEY (categoryID) REFERENCES CategoryTable(categoryID))",
+
+                "INSERT INTO ProductCategoryTable VALUES ('0001',(SELECT categoryID FROM CategoryTable WHERE categoryName = 'Home'))",
+                "INSERT INTO ProductCategoryTable VALUES ('0001',(SELECT categoryID FROM CategoryTable WHERE categoryName = 'TVs'))"
+
         };
 
         try (Connection connection = DriverManager.getConnection(dbURL)) {

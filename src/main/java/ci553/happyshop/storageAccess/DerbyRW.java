@@ -19,8 +19,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 
 public class DerbyRW implements DatabaseRW {
-    private static String dbURL = DatabaseRWFactory.dbURL; // Shared by all instances
-    private  Lock lock = new ReentrantLock(); // Each instance has its own lock
+    private static final String dbURL = DatabaseRWFactory.dbURL; // Shared by all instances
+    private final Lock lock = new ReentrantLock(); // Each instance has its own lock
 
     //search product by product Id or name, return a list of products or null
     //search by Id at first, if get null, search by product name
@@ -42,6 +42,23 @@ public class DerbyRW implements DatabaseRW {
             System.out.println("Product " + keyword + " not found.");
         }
         return productList;
+    }
+    public String getProductCategory(String productId) throws SQLException {
+        String sql = "SELECT c.categoryName " +
+                "FROM ProductCategoryTable pc " +
+                "JOIN CategoryTable c ON pc.categoryID = c.categoryID " +
+                "WHERE pc.productID = ?";
+
+        try (Connection conn = DriverManager.getConnection(dbURL);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, productId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("categoryName");
+            } else {
+                return null;
+            }
+        }
     }
 
     //search  by product Id, return a product or null
@@ -254,6 +271,52 @@ public class DerbyRW implements DatabaseRW {
         }
     }
 
+    public void updateProductCategory(String productId, String categoryName)
+            throws SQLException {
+
+        lock.lock();
+
+        String getCategoryIdSql =
+                "SELECT categoryID FROM CategoryTable WHERE categoryName = ?";
+
+
+        String insertNewSql =
+                "INSERT INTO ProductCategoryTable (productID, categoryID) VALUES (?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(dbURL)) {
+            conn.setAutoCommit(false);
+
+            int categoryId;
+
+
+            try (PreparedStatement ps = conn.prepareStatement(getCategoryIdSql)) {
+                ps.setString(1, categoryName);
+                ResultSet rs = ps.executeQuery();
+
+                if (!rs.next()) {
+                    throw new SQLException("Category not found: " + categoryName);
+                }
+                categoryId = rs.getInt("categoryID");
+            }
+
+
+
+
+            try (PreparedStatement ps = conn.prepareStatement(insertNewSql)) {
+                ps.setString(1, productId);
+                ps.setInt(2, categoryId);
+                ps.executeUpdate();
+            }
+            conn.commit();
+            System.out.println("Category updated for product " + productId);
+
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            lock.unlock();
+        }
+    }
+
 //warehouse delete an existing product
     public void deleteProduct(String proId) throws SQLException {
         lock.lock();
@@ -305,11 +368,57 @@ public class DerbyRW implements DatabaseRW {
             // If count = 0, the ID is available, return true
             if (rs.next()) { // Move cursor to the first (and only) row
                 int count = rs.getInt(1); // Get the first column value (the count)
-                if (count == 0) return true;
-                else return false;
+                return count == 0;
             }
             return false; // Default case (should not happen)
         }
+    }
+
+    public ArrayList<Product> getAllProducts() {
+        ArrayList<Product> productList = new ArrayList<>();
+        String query = "SELECT * FROM ProductTable";
+
+        try (Connection conn = DriverManager.getConnection(dbURL);
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                productList.add(makeProObjFromDbRecord(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return productList;
+    }
+
+    public ArrayList<Product> getProductsByCategory(String category) {
+        ArrayList<Product> productList = new ArrayList<>();
+
+        String query =
+                "SELECT p.* " +
+                        "FROM ProductTable p " +
+                        "JOIN ProductCategoryTable pc ON p.productID = pc.productID " +
+                        "JOIN CategoryTable c ON pc.categoryID = c.categoryID " +
+                        "WHERE c.categoryName = ?";
+
+        try (Connection conn = DriverManager.getConnection(dbURL);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, category);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    productList.add(makeProObjFromDbRecord(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Database query error, getProductsByCategory: " + category + " " + e.getMessage());
+        }
+
+        return productList;
     }
 
     //   /images/0001TV.jpg

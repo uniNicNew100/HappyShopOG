@@ -1,0 +1,13 @@
+Order ID: 21 
+State: Ordered 
+OrderedDateTime: 2026-01-22 19:56:11 
+ProgressingDateTime:  
+CollectedDateTime: 
+Items:
+ 0002    DAB Radio          ( 1) £  29.99
+ 0001    40 inch TV         ( 2) £ 538.00
+ 0003    Toaster            ( 1) £  19.99
+ 0004    Watch              ( 1) £  29.99
+--------------------------------------------
+ Total                               £ 617.97
+

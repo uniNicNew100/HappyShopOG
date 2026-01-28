@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -34,9 +35,9 @@ public class PickerView  {
     private VBox vbOrderDetailRoot;
 
     //Three controllers needs updating when program going on
-    private TextArea taOrderMap = new TextArea();
+    private final TextArea taOrderMap = new TextArea();
           // TextArea for displaying a list of orders and their states(orderId → state)
-    private TextArea taOrderDetail = new TextArea();
+    private final TextArea taOrderDetail = new TextArea();
         // TextArea for displaying detailed information about the selected order after it is assigned to the picker.
     private Label laDetailRootTitle;
        // Label used as the title for the Order Detail section.
@@ -68,11 +69,16 @@ public class PickerView  {
         taOrderMap.setPrefSize(WIDTH, HEIGHT - 100);
         taOrderMap.setStyle(UIStyle.textFiledStyle);
 
+
+        Button btnMenu = new Button("Menu");
+        btnMenu.setStyle(UIStyle.buttonStyle);
+        btnMenu.setOnAction(this::buttonClicked);
         Button btnProgressing = new Button("Progressing");
         btnProgressing.setOnAction(this::buttonClicked);
         btnProgressing.setStyle(UIStyle.buttonStyle);
+        HBox buttonHBox = new HBox(btnMenu, btnProgressing);
 
-        VBox vbOrdersListRoot = new VBox(15, laOrderMapRootTitle, taOrderMap, btnProgressing);
+        VBox vbOrdersListRoot = new VBox(15, laOrderMapRootTitle, taOrderMap, buttonHBox);
         vbOrdersListRoot.setAlignment(Pos.TOP_CENTER);
         vbOrdersListRoot.setStyle(UIStyle.rootStyleYellow);
 
@@ -88,11 +94,17 @@ public class PickerView  {
         taOrderDetail.setText("Order details");
         taOrderDetail.setStyle(UIStyle.textFiledStyle);
 
+        Button btnMenu = new Button("Menu");
+        btnMenu.setStyle(UIStyle.buttonStyle);
+        btnMenu.setOnAction(this::buttonClicked);
+
         Button btnCollected = new Button("Customer Collected");
         btnCollected.setOnAction(this::buttonClicked);
         btnCollected.setStyle(UIStyle.buttonStyle);
 
-        VBox vbOrderDetailsRoot = new VBox(15, laDetailRootTitle, taOrderDetail, btnCollected);
+        HBox buttonHBox = new HBox(btnMenu, btnCollected);
+
+        VBox vbOrderDetailsRoot = new VBox(15, laDetailRootTitle, taOrderDetail, buttonHBox);
         vbOrderDetailsRoot.setAlignment(Pos.TOP_CENTER);
         vbOrderDetailsRoot.setStyle(UIStyle.rootStyleBlue);
 
@@ -113,6 +125,9 @@ public class PickerView  {
                 case "Customer Collected":
                     pickerController.doCollected();
                     scene.setRoot(vbOrderMapRoot); // switch back to orderMapRoot
+                    break;
+                case "Menu":
+                    pickerController.doMenu();
                     break;
             }
         } catch (IOException e) {
